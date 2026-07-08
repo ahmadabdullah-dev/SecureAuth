@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import agent from "../api/agent";
 import type {
+  LoginUserDto,
   RegisterUserDto,
 } from "../types/auth";
 
@@ -12,8 +13,15 @@ export const useAuth = () => {
       return response.data;
     },
   });
-
+  const loginUserAsync = useMutation({
+    mutationFn: async (creds: LoginUserDto) => {
+      const response = await agent.post("/auth/login-user", creds);
+      return response.data;
+    },
+  });
   return {
     registerUserAsync,
+    loginUserAsync
+    
   };
 };
