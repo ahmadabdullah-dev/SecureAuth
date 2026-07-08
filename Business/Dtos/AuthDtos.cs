@@ -4,3 +4,8 @@ public record RegisterUserDto(
     string Email,
     string Password
 );
+public record LoginUserDto(
+    string Email,
+    string Password,
+    bool IsPersistence
+);
