@@ -19,9 +19,15 @@ export const useAuth = () => {
       return response.data;
     },
   });
+  const logoutUserAsync = useMutation({
+    mutationFn: async () => {
+      const response = await agent.post("/auth/logout-user");
+      return response.data;
+    },
+  });
   return {
     registerUserAsync,
-    loginUserAsync
-    
+    loginUserAsync,
+    logoutUserAsync
   };
 };
