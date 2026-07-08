@@ -27,7 +27,7 @@ public class AuthService : IAuthService
             var registerResult = await _userManager.CreateAsync(newUser,dto.Password);
         
             if (!registerResult.Succeeded)
-                return Result<string>.Failure(string.Join(",", registerResult.Errors.Select(e => e.Description)));
+                return Result<string>.Failure(registerResult.Errors?.FirstOrDefault()?.Description ?? "Unexpected error happened");
 
             await _userManager.AddToRoleAsync(newUser, MEMBER_ROLE);
       
