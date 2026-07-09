@@ -11,6 +11,7 @@ export const routes = createBrowserRouter([
     children: [
       { index: true, element: <LandingPage /> },
       { path: "register", element: <RegisterUserForm /> },
+      { path: "login", element: <LandingPage /> },
       { path: "*", element: <NotFound /> },
     ],
   },

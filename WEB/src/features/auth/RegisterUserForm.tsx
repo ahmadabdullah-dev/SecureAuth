@@ -4,6 +4,7 @@ import type { RegisterUserDto } from "../../lib/types/auth";
 import { Container,CircularProgress,Alert, Box, Paper, Typography, TextField, InputAdornment, IconButton, Button, Stack } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 
 export default function RegisterUserForm() {
   const { registerUserAsync } = useAuth();
@@ -22,6 +23,7 @@ export default function RegisterUserForm() {
         }
     });
   };
+  const navigate = useNavigate();
   return (
     <Container maxWidth="sm">
       <Box
@@ -65,7 +67,10 @@ export default function RegisterUserForm() {
                 type={showPassword ? "text" : "password"}
                 {...register("password", {
                   required: "Password is required",
-                  minLength: 6,
+                  minLength: {
+                    value: 6,
+                    message: "Must be at least 6 characters",
+                  },
                 })}
                 error={!!errors.password}
                 helperText={errors.password?.message}
@@ -105,6 +110,13 @@ export default function RegisterUserForm() {
                   {registerUserAsync.error.message}
                 </Alert>
               )}
+              <Button
+                variant="text"
+                sx={{ border: 2, m: 1, width: "100%" }}
+                onClick={() => navigate("/login")}
+              >
+                Already registered
+              </Button>
             </Stack>
           </Box>
         </Paper>
