@@ -8,7 +8,7 @@ public static class DependencyInjection
     public static IServiceCollection AddBusiness(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IAuthService, AuthService>();
-
+        services.AddScoped<IUserService, UserService>();
         return services;
 
     }
