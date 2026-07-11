@@ -1,8 +1,9 @@
-import LogoutUserButton from "../auth/LogoutUserButton";
+import MenuAppBar from "./MenuAppBar";
 
 export default function HomePage() {
     return (<>
-    u r authorized
-    <LogoutUserButton/>
+    <MenuAppBar/>  
+      u r authorized
+
     </>)
 }
