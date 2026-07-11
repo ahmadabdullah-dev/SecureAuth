@@ -42,4 +42,10 @@ public class AuthController : ControllerBase
         var result = await _authService.ForgetUserPasswordAsync(dto);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetUserPassword(ResetUserPasswordDTO dto)
+    {
+        var result = await _authService.ResetUserPasswordAsync(dto);
+        return result.IsSuccess ? Ok(result) : BadRequest(result);
+    }
 }

@@ -12,6 +12,6 @@ public record LoginUserDto(
 public record ForgetUserPasswordDTO(string Email);
 public record ResetUserPasswordDTO(
     string Email,
-    string Password,
+    string NewPassword,
     string Code
 );

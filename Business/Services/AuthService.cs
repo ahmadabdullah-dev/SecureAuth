@@ -1,5 +1,4 @@
-﻿using DataAccess.Entities.Identity;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace Business.Services;
 
@@ -67,8 +66,32 @@ public class AuthService : IAuthService
         if (user == null)
             return Result<string>.Success("User not found");
 
-        await _emailService.SendCodeAsync(user, "Reset Password", "ResetUserPassword");
+        await _emailService.SendCodeAsync(user, "Reset Password", "ResetPassword");
 
         return Result<string>.Success("Reset code sent successfully.");
+    }
+    public async Task<Result<string>> ResetUserPasswordAsync(ResetUserPasswordDTO dto)
+    {
+        var user = await _userManager.FindByEmailAsync(dto.Email);
+
+        if (user == null)
+            return Result<string>.Failure("Invalid or expired code.");
+
+        var isValid = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultEmailProvider, "ResetPassword", dto.Code);
+
+        if (!isValid)
+            return Result<string>.Failure("Invalid or expired code.");
+
+        var removePasswordResult = await _userManager.RemovePasswordAsync(user);
+       
+        if (!removePasswordResult.Succeeded)
+            return Result<string>.Failure(string.Join(",", removePasswordResult.Errors.Select(e => e.Description)));
+
+        var addPasswordResult = await _userManager.AddPasswordAsync(user, dto.NewPassword);
+        
+        if (!addPasswordResult.Succeeded)
+            return Result<string>.Failure(string.Join(",", addPasswordResult.Errors.Select(e => e.Description)));
+
+        return Result<string>.Success("Password reset successfully.");
     }
 }
