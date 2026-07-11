@@ -8,6 +8,9 @@
 <ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
+<ItemGroup>
+  <PackageReference Include="MailKit" Version="4.17.0" />
+</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
   </ItemGroup>
