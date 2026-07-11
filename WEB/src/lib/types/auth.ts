@@ -8,3 +8,16 @@ export type LoginUserDto = {
   password: string,
   isPersistence: boolean
 }
+export type ForgetPasswordDto = {
+  email: string;
+}
+
+export type ResetPasswordDto =  {
+  email: string;
+  newPassword: string;
+  code: string;
+}
+
+export type ConfirmEmailDto = {
+  code: string;
+}

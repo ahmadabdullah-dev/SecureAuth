@@ -1,8 +1,11 @@
 import { useMutation,useQueryClient } from "@tanstack/react-query";
 import agent from "../api/agent";
 import type {
+  ConfirmEmailDto,
+  ForgetPasswordDto,
   LoginUserDto,
   RegisterUserDto,
+  ResetPasswordDto,
 } from "../types/auth";
 import { useNavigate } from "react-router";
 
@@ -36,9 +39,38 @@ export const useAuth = () => {
       navigate("/login");
     },
   });
+  const forgetPasswordAsync = useMutation({
+    mutationFn: async (creds: ForgetPasswordDto) => {
+      const response = await agent.post("/auth/forget-password", creds);
+      return response.data;
+    },
+  });
+ const resetPasswordAsync = useMutation({
+   mutationFn: async (creds: ResetPasswordDto) => {
+     const response = await agent.post("/auth/reset-password", creds);
+     return response.data;
+   },
+ });
+ const resendEmailConfirmationCodeAsync = useMutation({
+   mutationFn: async () => {
+     const response = await agent.post("/auth/resend-email-confirmation-code");
+     return response.data;
+   },
+ });
+const confirmEmailAsync = useMutation({
+  mutationFn: async (creds: ConfirmEmailDto) => {
+    const response = await agent.post("/auth/confirm-email",creds);
+    return response.data;
+  },
+});
+
   return {
     registerUserAsync,
     loginUserAsync,
-    logoutUserAsync
+    logoutUserAsync,
+    forgetPasswordAsync,
+    resetPasswordAsync,
+    resendEmailConfirmationCodeAsync,
+    confirmEmailAsync
   };
 };
