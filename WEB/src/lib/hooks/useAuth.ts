@@ -13,14 +13,14 @@ export const useAuth = () => {
 
   const registerUserAsync = useMutation({
     mutationFn: async (creds: RegisterUserDto) => {
-      const response = await agent.post("/auth/register-user", creds);
+      const response = await agent.post("/auth/register", creds);
       return response.data;
     },
   });
 
   const loginUserAsync = useMutation({
     mutationFn: async (creds: LoginUserDto) => {
-      const response = await agent.post("/auth/login-user", creds);
+      const response = await agent.post("/auth/login", creds);
       return response.data;
     },  onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["currentUser"] });
@@ -30,7 +30,7 @@ export const useAuth = () => {
 
   const logoutUserAsync = useMutation({
     mutationFn: async () => {
-       await agent.post("/auth/logout-user");
+       await agent.post("/auth/logout");
     }, onSuccess: () => {
       queryClient.removeQueries({ queryKey: ["currentUser"] });
       navigate("/login");

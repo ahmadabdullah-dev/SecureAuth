@@ -7,21 +7,25 @@ public class AuthService : IAuthService
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
     private readonly IEmailService _emailService;
+    private readonly IUserService _userService;
 
     private const string MEMBER_ROLE = "Member";
 
     public AuthService(
         UserManager<AppUser> userManager,
         SignInManager<AppUser> signInManager,
-        IEmailService emailService
+        IEmailService emailService,
+         IUserService userService
+
 
     )
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _emailService = emailService;
+        _userService = userService;
     }
-    public async Task<Result<string>> RegisterUserAsync(RegisterUserDto dto)   
+    public async Task<Result<string>> RegisterAsync(RegisterDto dto)   
     {
         var newUser = new AppUser
         {
@@ -36,10 +40,12 @@ public class AuthService : IAuthService
             return Result<string>.Failure(registerResult.Errors.FirstOrDefault()?.Description ?? "Unexpected error happened");
 
         await _userManager.AddToRoleAsync(newUser, MEMBER_ROLE);
-      
-        return Result<string>.Success("Registration successful.");
+        
+        await _emailService.SendCodeAsync(newUser, "Email Confirmation", "EmailConfirmation");
+
+        return Result<string>.Success("Registration successful. A confirmation code has been sent to your email.");
     }
-    public async Task<Result<string>> LoginUserAsync(LoginUserDto dto)
+    public async Task<Result<string>> LoginAsync(LoginDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
 
@@ -53,13 +59,13 @@ public class AuthService : IAuthService
         
         return Result<string>.Success("Logged in successfully");
     }
-    public async Task<Result<string>> LogoutUserAsync()
+    public async Task<Result<string>> LogoutAsync()
     {
         await _signInManager.SignOutAsync();
 
         return Result<string>.Success("Logged out successfully");
     }
-    public async Task<Result<string>> ForgetUserPasswordAsync(ForgetUserPasswordDTO dto)
+    public async Task<Result<string>> ForgetPasswordAsync(ForgetPasswordDTO dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
 
@@ -70,7 +76,7 @@ public class AuthService : IAuthService
 
         return Result<string>.Success("Reset code sent successfully.");
     }
-    public async Task<Result<string>> ResetUserPasswordAsync(ResetUserPasswordDTO dto)
+    public async Task<Result<string>> ResetPasswordAsync(ResetPasswordDTO dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
 
@@ -93,5 +99,25 @@ public class AuthService : IAuthService
             return Result<string>.Failure(string.Join(",", addPasswordResult.Errors.Select(e => e.Description)));
 
         return Result<string>.Success("Password reset successfully.");
+    }
+    public async Task<Result<string>> ResendEmailConfirmationCodeAsync()
+    {
+        var userId = _userService.GetCurrentUserId();
+
+        if (userId == null)
+            return Result<string>.Failure("Unauthorized");
+
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user == null)
+            return Result<string>.Failure("Current user not found in db");
+
+        if (await _userManager.IsEmailConfirmedAsync(user))
+            return Result<string>.Failure("Email already confirmed");
+
+        await _emailService.SendCodeAsync(user, "Email Confirmation", "EmailConfirmation");
+
+        return Result<string>.Success("Email Confirmation code has been sent successfully");
+
     }
 }

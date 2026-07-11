@@ -14,38 +14,45 @@ public class AuthController : ControllerBase
         _authService = authService;   
     }   
     
-    [HttpPost("register-user")]
-    public async Task<IActionResult> RegisterUser(RegisterUserDto dto)
+    [HttpPost("register")]
+    public async Task<IActionResult> Register(RegisterDto dto)
     {
-        var result = await _authService.RegisterUserAsync(dto);
+        var result = await _authService.RegisterAsync(dto);
 
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
-    [HttpPost("login-user")]
-    public async Task<IActionResult> LoginUser(LoginUserDto dto)
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginDto dto)
     {
-        var result = await _authService.LoginUserAsync(dto);
+        var result = await _authService.LoginAsync(dto);
 
         return result.IsSuccess ? Ok(result) : Unauthorized(result);
     }
     [Authorize]
-    [HttpPost("logout-user")]
-    public async Task<IActionResult> LogoutUser()
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
     {
-        var result = await _authService.LogoutUserAsync();
+        var result = await _authService.LogoutAsync();
 
         return result.IsSuccess ? Ok(result) : Unauthorized(result);
     }
     [HttpPost("forget-password")]
-    public async Task<IActionResult> ForgetUserPassword(ForgetUserPasswordDTO dto)
+    public async Task<IActionResult> ForgetPassword(ForgetPasswordDTO dto)
     {
-        var result = await _authService.ForgetUserPasswordAsync(dto);
+        var result = await _authService.ForgetPasswordAsync(dto);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
     [HttpPost("reset-password")]
-    public async Task<IActionResult> ResetUserPassword(ResetUserPasswordDTO dto)
+    public async Task<IActionResult> ResetPassword(ResetPasswordDTO dto)
     {
-        var result = await _authService.ResetUserPasswordAsync(dto);
+        var result = await _authService.ResetPasswordAsync(dto);
+        return result.IsSuccess ? Ok(result) : BadRequest(result);
+    }
+    [Authorize]
+    [HttpPost("resend-email-confirmation-code")]
+    public async Task<IActionResult> ResendEmailConfirmationCode()
+    {
+        var result = await _authService.ResendEmailConfirmationCodeAsync();
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 }

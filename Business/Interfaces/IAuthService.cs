@@ -2,10 +2,11 @@
 
 public interface IAuthService
 {
-    Task<Result<string>> RegisterUserAsync(RegisterUserDto dto);
-    Task<Result<string>> LoginUserAsync(LoginUserDto dto);
-    Task<Result<string>> LogoutUserAsync();
-    Task<Result<string>> ForgetUserPasswordAsync(ForgetUserPasswordDTO dto);
-    Task<Result<string>> ResetUserPasswordAsync(ResetUserPasswordDTO dto);
+    Task<Result<string>> RegisterAsync(RegisterDto dto);
+    Task<Result<string>> LoginAsync(LoginDto dto);
+    Task<Result<string>> LogoutAsync();
+    Task<Result<string>> ForgetPasswordAsync(ForgetPasswordDTO dto);
+    Task<Result<string>> ResetPasswordAsync(ResetPasswordDTO dto);
+    Task<Result<string>> ResendEmailConfirmationCodeAsync();
 
 }
