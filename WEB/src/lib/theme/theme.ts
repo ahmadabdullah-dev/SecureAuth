@@ -4,16 +4,12 @@ export const theme = createTheme({
   palette: {
     primary: {
       main: "#EB5E28", // Spicy Paprika
-      dark: "#C74A1C",
-      light: "#F08055",
     },
     secondary: {
-      main: "#403D39", 
-      dark: "#252422", 
-      light: "#5C5852",
+      main: "#403D39",
     },
     background: {
-      default: "#F5F3F0", 
+      default: "#F5F3F0",
       paper: "#FFFFFF",
     },
     error: {
@@ -23,8 +19,8 @@ export const theme = createTheme({
       main: "#16A34A",
     },
     text: {
-      primary: "#252422", 
-      secondary: "#403D39", 
+      primary: "#252422",
+      secondary: "#403D39",
     },
   },
   shape: {

@@ -11,7 +11,9 @@ import LogoutUserButton from "../features/auth/LogoutUserButton";
 import { useNavigate } from "react-router";
 import { useUser } from "../lib/hooks/useUser";
 import { useState, type MouseEvent } from "react";
-
+import {ListItemIcon, ListItemText } from "@mui/material";
+import PersonIcon from "@mui/icons-material/Person";
+import SettingsIcon from "@mui/icons-material/Settings";
 export default function MenuAppBar() {
   const navigate = useNavigate();
   const { CurrentUser } = useUser();
@@ -40,7 +42,7 @@ export default function MenuAppBar() {
             aria-label="menu"
             sx={{ mr: 2 }}
           >
-            <MenuIcon />
+            <MenuIcon sx={{ color: "secondary.main" }} />
           </IconButton>
 
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -54,9 +56,8 @@ export default function MenuAppBar() {
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 onClick={handleMenu}
-                color="inherit"
               >
-                <AccountCircle />
+                <AccountCircle sx={{ color: "secondary.main" }} />
               </IconButton>
 
               <Menu
@@ -68,11 +69,23 @@ export default function MenuAppBar() {
                 open={Boolean(anchorEl)}
                 onClose={() => handleClose()}
               >
-                <MenuItem onClick={() => handleClose("/profile")}>
-                  Profile
+                <MenuItem
+                  sx={{ color: "secondary.main" }}
+                  onClick={() => handleClose("/profile")}
+                >
+                  <ListItemIcon sx={{ color: "inherit" }}>
+                    <PersonIcon />
+                  </ListItemIcon>
+                  <ListItemText>Profile</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={() => handleClose("/settings")}>
-                  Settings
+                <MenuItem
+                  sx={{ color: "secondary.main" }}
+                  onClick={() => handleClose("/settings")}
+                >
+                  <ListItemIcon sx={{ color: "inherit" }}>
+                    <SettingsIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Settings</ListItemText>
                 </MenuItem>
                 <MenuItem onClick={() => handleClose()}>
                   <LogoutUserButton />

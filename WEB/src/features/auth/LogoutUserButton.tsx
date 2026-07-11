@@ -10,7 +10,7 @@ export default function LogoutUserButton() {
       onClick={() => logoutUserAsync.mutate()}
       disabled={logoutUserAsync.isPending}
       variant="outlined"
-      color="error"
+      color="secondary"
       startIcon={<LogoutIcon />}
     >
       {logoutUserAsync.isPending ? "Logging out…" : "Log out"}
