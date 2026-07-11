@@ -37,13 +37,13 @@ public class AuthController : ControllerBase
         return result.IsSuccess ? Ok(result) : Unauthorized(result);
     }
     [HttpPost("forget-password")]
-    public async Task<IActionResult> ForgetPassword(ForgetPasswordDTO dto)
+    public async Task<IActionResult> ForgetPassword(ForgetPasswordDto dto)
     {
         var result = await _authService.ForgetPasswordAsync(dto);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
     [HttpPost("reset-password")]
-    public async Task<IActionResult> ResetPassword(ResetPasswordDTO dto)
+    public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
     {
         var result = await _authService.ResetPasswordAsync(dto);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
@@ -53,6 +53,13 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> ResendEmailConfirmationCode()
     {
         var result = await _authService.ResendEmailConfirmationCodeAsync();
+        return result.IsSuccess ? Ok(result) : BadRequest(result);
+    }
+    [Authorize]
+    [HttpPost("confirm-email")]
+    public async Task<IActionResult> ConfirmEmail(ConfirmEmailDto dto)
+    {
+        var result = await _authService.ConfirmEmailAsync(dto);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 }

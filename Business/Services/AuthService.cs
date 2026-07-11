@@ -65,7 +65,7 @@ public class AuthService : IAuthService
 
         return Result<string>.Success("Logged out successfully");
     }
-    public async Task<Result<string>> ForgetPasswordAsync(ForgetPasswordDTO dto)
+    public async Task<Result<string>> ForgetPasswordAsync(ForgetPasswordDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
 
@@ -76,7 +76,7 @@ public class AuthService : IAuthService
 
         return Result<string>.Success("Reset code sent successfully.");
     }
-    public async Task<Result<string>> ResetPasswordAsync(ResetPasswordDTO dto)
+    public async Task<Result<string>> ResetPasswordAsync(ResetPasswordDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
 
@@ -119,5 +119,34 @@ public class AuthService : IAuthService
 
         return Result<string>.Success("Email Confirmation code has been sent successfully");
 
+    }
+    public async Task<Result<string>> ConfirmEmailAsync(ConfirmEmailDto dto)
+    {
+        var userId = _userService.GetCurrentUserId();
+
+        if (userId == null)
+            return Result<string>.Failure("Unauthorized");
+
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user == null)
+            return Result<string>.Failure("Current user not found in db");
+
+        if (await _userManager.IsEmailConfirmedAsync(user))
+            return Result<string>.Failure("Email already confirmed");
+
+        var isValid = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultEmailProvider, "EmailConfirmation", dto.Code);
+
+        if (!isValid)
+            return Result<string>.Failure("Invalid or expired code.");
+
+        user.EmailConfirmed = true;
+
+        var updateResult = await _userManager.UpdateAsync(user);
+        
+        if(!updateResult.Succeeded)
+            Result<string>.Failure("Failed to confirm email.");
+
+        return Result<string>.Success("Email confirmed successfully.");
     }
 }

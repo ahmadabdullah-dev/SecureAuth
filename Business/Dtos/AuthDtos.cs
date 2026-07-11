@@ -9,9 +9,10 @@ public record LoginDto(
     string Password,
     bool IsPersistence
 );
-public record ForgetPasswordDTO(string Email);
-public record ResetPasswordDTO(
+public record ForgetPasswordDto(string Email);
+public record ResetPasswordDto(
     string Email,
     string NewPassword,
     string Code
 );
+public record ConfirmEmailDto(string Code);
