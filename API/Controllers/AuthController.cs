@@ -36,5 +36,10 @@ public class AuthController : ControllerBase
 
         return result.IsSuccess ? Ok(result) : Unauthorized(result);
     }
-
+    [HttpPost("forget-password")]
+    public async Task<IActionResult> ForgetUserPassword(ForgetUserPasswordDTO dto)
+    {
+        var result = await _authService.ForgetUserPasswordAsync(dto);
+        return result.IsSuccess ? Ok(result) : BadRequest(result);
+    }
 }

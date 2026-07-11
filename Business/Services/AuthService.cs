@@ -7,16 +7,20 @@ public class AuthService : IAuthService
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
+    private readonly IEmailService _emailService;
 
     private const string MEMBER_ROLE = "Member";
 
     public AuthService(
         UserManager<AppUser> userManager,
-        SignInManager<AppUser> signInManager
+        SignInManager<AppUser> signInManager,
+        IEmailService emailService
+
     )
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _emailService = emailService;
     }
     public async Task<Result<string>> RegisterUserAsync(RegisterUserDto dto)   
     {
@@ -55,5 +59,16 @@ public class AuthService : IAuthService
         await _signInManager.SignOutAsync();
 
         return Result<string>.Success("Logged out successfully");
+    }
+    public async Task<Result<string>> ForgetUserPasswordAsync(ForgetUserPasswordDTO dto)
+    {
+        var user = await _userManager.FindByEmailAsync(dto.Email);
+
+        if (user == null)
+            return Result<string>.Success("User not found");
+
+        await _emailService.SendCodeAsync(user, "Reset Password", "ResetUserPassword");
+
+        return Result<string>.Success("Reset code sent successfully.");
     }
 }
