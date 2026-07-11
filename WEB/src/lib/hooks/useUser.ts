@@ -5,8 +5,10 @@ import type { UserDto } from "../types/user";
 export const useUser = () =>
 {
     const CurrentUser = useQuery({
-    queryKey: ["currentUser"],
-    queryFn: () => agent.get<Result<UserDto>>("/user/current-user").then((res) => res.data) 
+      queryKey: ["currentUser"],
+      queryFn: () => agent.get<Result<UserDto>>("/user/current-user").then((res) => res.data),
+      staleTime: 5 * 60 * 1000, // cache for 5 min
+      retry: false, 
     });
 
     return {
