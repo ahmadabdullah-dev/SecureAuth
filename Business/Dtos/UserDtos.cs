@@ -12,16 +12,19 @@ public record UserDto(
     DateTime JoinedDate,
     IList<string> Roles
 );
-public record RequestUpdateEmailDTO(
+public record RequestUpdateEmailDto(
     string NewEmail
 );
-public record UpdateEmailDTO(
+public record UpdateEmailDto(
     string Code
 );
-public record UpdateCurrentUserDTO(
+public record UpdateCurrentUserDto(
    string? FirstName,
    string? LastName,
    string? PhoneNumber,
    string? Country,
    DateOnly? DateOfBirth
+);
+public record UpdateUserNameDto(
+    string NewUserName
 );

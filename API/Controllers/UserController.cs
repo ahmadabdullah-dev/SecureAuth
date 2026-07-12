@@ -21,14 +21,14 @@ public class UserController : ControllerBase
     }
     
     [HttpPost("request-update-email")]
-    public async Task<IActionResult> RequestUpdateEmail(RequestUpdateEmailDTO dto)
+    public async Task<IActionResult> RequestUpdateEmail(RequestUpdateEmailDto dto)
     {
         var result = await _userService.RequestUpdateEmailAsync(dto);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
 
     }
     [HttpPatch("update-email")]
-    public async Task<IActionResult> UpdateEmail(UpdateEmailDTO dto)
+    public async Task<IActionResult> UpdateEmail(UpdateEmailDto dto)
     {
         var result = await _userService.UpdateEmailAsync(dto);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
@@ -41,9 +41,15 @@ public class UserController : ControllerBase
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
     [HttpPut("update-current-user")]
-    public async Task<IActionResult> UpdateCurrentUser(UpdateCurrentUserDTO dto)
+    public async Task<IActionResult> UpdateCurrentUser(UpdateCurrentUserDto dto)
     {
         var result = await _userService.UpdateCurrentUserAsync(dto);
+        return result.IsSuccess ? Ok(result) : BadRequest(result);
+    }
+    [HttpPatch("update-current-username")]
+    public async Task<IActionResult> UpdatUserName(UpdateUserNameDto dto)
+    {
+        var result = await _userService.UpdateUserNameAsync(dto);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 }

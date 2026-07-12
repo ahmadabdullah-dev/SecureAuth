@@ -55,7 +55,7 @@ public class UserService : IUserService
 
         return Result<UserDto>.Success(userDTO);
     }
-    public async Task<Result<string>> RequestUpdateEmailAsync(RequestUpdateEmailDTO dto)
+    public async Task<Result<string>> RequestUpdateEmailAsync(RequestUpdateEmailDto dto)
     {
         var currentUserId = GetCurrentUserId();
 
@@ -84,7 +84,7 @@ public class UserService : IUserService
         return Result<string>.Success("Confirmation code sent to new email");
 
     }
-    public async Task<Result<string>> UpdateEmailAsync(UpdateEmailDTO dto)
+    public async Task<Result<string>> UpdateEmailAsync(UpdateEmailDto dto)
     {
         var currentUserId = GetCurrentUserId();
 
@@ -141,7 +141,7 @@ public class UserService : IUserService
 
         return Result<string>.Success("Confirmation code sent to new email");
     }
-    public async Task<Result<string>> UpdateCurrentUserAsync(UpdateCurrentUserDTO dto)
+    public async Task<Result<string>> UpdateCurrentUserAsync(UpdateCurrentUserDto dto)
     {
 
         var currentUserId = GetCurrentUserId();
@@ -175,6 +175,31 @@ public class UserService : IUserService
             return Result<string>.Failure(string.Join(",", updateResult.Errors.Select(e => e.Description)));
 
         return Result<string>.Success("User updated successfully");
+    }
+    public async Task<Result<string>> UpdateUserNameAsync(UpdateUserNameDto dto)
+    {
+        var currentUserId = GetCurrentUserId();
+
+        if (currentUserId == null)
+            return Result<string>.Failure("Unauthorized");
+
+        var currentUser = await _userManager.FindByIdAsync(currentUserId);
+
+        if (currentUser == null)
+            return Result<string>.Failure("User not found");
+
+        if (string.Equals(currentUser.UserName, dto.NewUserName, StringComparison.OrdinalIgnoreCase))
+            return Result<string>.Failure("You cannot use the same username");
+
+        currentUser.UserName = dto.NewUserName;
+
+        var updateResult = await _userManager.UpdateAsync(currentUser);
+
+        if (!updateResult.Succeeded)
+            return Result<string>.Failure(string.Join(",", updateResult.Errors.Select(e => e.Description)));
+
+        return Result<string>.Success("UserName updated successfully");
+
     }
 }
 
