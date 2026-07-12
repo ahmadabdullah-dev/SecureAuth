@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/user")]
 public class UserController : ControllerBase
@@ -12,11 +13,18 @@ public class UserController : ControllerBase
     {
         _userService = userService;
     }
-    [Authorize]
     [HttpGet("current-user")]
     public async Task<IActionResult> CurrentUser()
     {
         var result = await _userService.CurrentUserAsync();
         return result.IsSuccess ? Ok(result) : Unauthorized(result);
+    }
+    
+    [HttpPost("request-update-email")]
+    public async Task<IActionResult> RequestUpdateEmail(RequestUpdateEmailDTO dto)
+    {
+        var result = await _userService.RequestUpdateEmailAsync(dto);
+        return result.IsSuccess ? Ok(result) : BadRequest(result);
+
     }
 }

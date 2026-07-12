@@ -8,5 +8,6 @@ public class AppUser : IdentityUser
     public string LastName { get; set; } = string.Empty;
     public string? Country { get; set; } 
     public DateOnly? DateOfBirth { get; set; }
+    public string? PendingEmail { get; set; }
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 }

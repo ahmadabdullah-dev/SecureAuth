@@ -12,3 +12,6 @@ public record UserDto(
     DateTime JoinedDate,
     IList<string> Roles
 );
+public record RequestUpdateEmailDTO(
+    string NewEmail
+);
