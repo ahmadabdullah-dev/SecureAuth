@@ -70,7 +70,7 @@ public class AuthService : IAuthService
         var user = await _userManager.FindByEmailAsync(dto.Email);
 
         if (user == null)
-            return Result<string>.Success("User not found");
+            return Result<string>.Failure("User not found");
 
         await _emailService.SendCodeAsync(user, "Reset Password", "ResetPassword");
 

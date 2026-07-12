@@ -75,7 +75,7 @@ export default function LoginUserForm() {
                 type={showPassword ? "text" : "password"}
                 {...register("password", {
                   required: "Password is required",
-                  minLength: 6,
+                  minLength: {value: 6, message: "Password must be at least 6 characters"},
                 })}
                 error={!!errors.password}
                 helperText={errors.password?.message}
@@ -85,6 +85,9 @@ export default function LoginUserForm() {
                     endAdornment: (
                       <InputAdornment position="end">
                         <IconButton
+                          aria-label={
+                            showPassword ? "Hide password" : "Show password"
+                          }
                           onClick={() => setShowPassword(!showPassword)}
                           edge="end"
                         >
@@ -103,7 +106,7 @@ export default function LoginUserForm() {
                 component="button"
                 type="button"
                 variant="body2"
-                onClick={() => navigate("/forgot-password")}
+                onClick={() => navigate("/forget-password")}
               >
                 Forgot password?
               </Link>

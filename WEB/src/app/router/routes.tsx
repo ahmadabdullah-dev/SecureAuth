@@ -9,6 +9,8 @@ import Settings from "../../features/home/Settings";
 import { useUser } from "../../lib/hooks/useUser";
 import LoginUserForm from "../../features/auth/LoginUserForm";
 import ErrorPage from "../../features/errors/ErrorPage";
+import ForgetPasswordForm from "../../features/auth/ForgetPasswordForm";
+import ResetPasswordForm from "../../features/auth/ResetPasswordForm";
 
 export default function RedirectIfAuth() {
   const { CurrentUser } = useUser();
@@ -22,9 +24,9 @@ export const routes = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    errorElement: <ErrorPage/>,
+    errorElement: <ErrorPage />,
     children: [
-      { index: true, element: <Navigate to="/login" replace/> },
+      { index: true, element: <Navigate to="/login" replace /> },
       {
         element: <RequireAuth />,
         children: [
@@ -32,11 +34,15 @@ export const routes = createBrowserRouter([
           { path: "profile", element: <Profile /> },
           { path: "settings", element: <Settings /> },
         ],
-      },{
-       element: <RedirectIfAuth />,
+      },
+      {
+        element: <RedirectIfAuth />,
         children: [
           { path: "register", element: <RegisterUserForm /> },
           { path: "login", element: <LoginUserForm /> },
+          { path: "forget-password", element: <ForgetPasswordForm /> },
+          { path: "reset-password/:email", element: <ResetPasswordForm /> } 
+
         ],
       },
       { path: "*", element: <NotFound /> },
