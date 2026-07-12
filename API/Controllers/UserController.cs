@@ -52,4 +52,10 @@ public class UserController : ControllerBase
         var result = await _userService.UpdateUserNameAsync(dto);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
+    [HttpDelete("delete-current-user")]
+    public async Task<IActionResult> DeleteCurrentUser()
+    {
+        var result = await _userService.DeleteCurrentUserAsync();
+        return result.IsSuccess ? Ok(result) : BadRequest(result);
+    }
 }

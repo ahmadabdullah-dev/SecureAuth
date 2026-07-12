@@ -9,16 +9,20 @@ public class UserService : IUserService
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly UserManager<AppUser> _userManager;
     private readonly IEmailService _emailService;
+    private readonly SignInManager<AppUser> _signInManager;
 
     public UserService(
         IHttpContextAccessor httpContextAccessor,
         UserManager<AppUser> userManager,
-        IEmailService emailService
+        IEmailService emailService,
+        SignInManager<AppUser> signInManager
+
     )
     {
         _httpContextAccessor = httpContextAccessor;
         _userManager = userManager;
         _emailService = emailService;
+        _signInManager = signInManager;
     }
     private const string EMAIL_UPDATE_PURPOSE = "UpdateEmail";
     public string? GetCurrentUserId()
@@ -199,6 +203,29 @@ public class UserService : IUserService
             return Result<string>.Failure(string.Join(",", updateResult.Errors.Select(e => e.Description)));
 
         return Result<string>.Success("UserName updated successfully");
+
+    }
+    public async Task<Result<string>> DeleteCurrentUserAsync()
+    {
+        var currentUserId = GetCurrentUserId();
+
+        if (currentUserId == null)
+            return Result<string>.Failure("Unauthorized");
+
+        var currentUser = await _userManager.FindByIdAsync(currentUserId);
+
+        if (currentUser == null)
+            return Result<string>.Failure("User not found");
+
+        var result = await _userManager.DeleteAsync(currentUser);
+
+        if (result.Succeeded)
+        {
+            await _signInManager.SignOutAsync();
+            return Result<string>.Success("User deleted successfully");
+
+        }
+        return Result<string>.Failure(string.Join(",", result.Errors.Select(e => e.Description)));
 
     }
 }
