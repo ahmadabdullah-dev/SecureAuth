@@ -32,8 +32,11 @@ export default function MenuAppBar() {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+    <Box>
+      <AppBar
+        sx={{ display: "flex", justifyContent: "space-between" }}
+        position="static"
+      >
         <Toolbar>
           <IconButton
             size="large"
@@ -42,12 +45,16 @@ export default function MenuAppBar() {
             aria-label="menu"
             sx={{ mr: 2 }}
           >
-            <MenuIcon sx={{ color: "secondary.main" }} />
+            <MenuIcon />
           </IconButton>
-
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography
+            onClick={() => navigate("/")}
+            variant="h6"
+            sx={{ cursor: "pointer" }}
+          >
             Secure Auth
           </Typography>
+          <Box sx={{ flexGrow: 1 }} />
           {CurrentUser.data?.isSuccess && (
             <div>
               <IconButton
@@ -57,7 +64,7 @@ export default function MenuAppBar() {
                 aria-haspopup="true"
                 onClick={handleMenu}
               >
-                <AccountCircle sx={{ color: "secondary.main" }} />
+                <AccountCircle sx={{ color: "background.default" }} />
               </IconButton>
 
               <Menu
