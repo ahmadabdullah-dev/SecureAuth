@@ -58,4 +58,10 @@ public class UserController : ControllerBase
         var result = await _userService.DeleteCurrentUserAsync();
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
+    [HttpGet("current-user-role")]
+    public async Task<IActionResult> GetCurrentUserRole()
+    {
+        var result =  _userService.GetCurrentUserRole();
+        return result == null ? Ok(result) : BadRequest(result);
+    }
 }

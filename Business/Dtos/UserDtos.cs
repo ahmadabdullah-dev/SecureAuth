@@ -10,7 +10,7 @@ public record UserDto(
     bool EmailConfirmed,
     DateOnly? BirthDate,
     DateTime JoinedDate,
-    IList<string> Roles
+    string Role
 );
 public record RequestUpdateEmailDto(
     string NewEmail

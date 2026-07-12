@@ -29,6 +29,10 @@ public class UserService : IUserService
     {
         return _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
+    public string? GetCurrentUserRole()
+    {
+        return _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Role);
+    }
     public async Task<Result<UserDto>> CurrentUserAsync()
     {
         var userId = GetCurrentUserId();
@@ -54,7 +58,7 @@ public class UserService : IUserService
              user.EmailConfirmed,
              user.DateOfBirth,
              user.CreatedDate,
-             roles
+             roles[0]
         );
 
         return Result<UserDto>.Success(userDTO);

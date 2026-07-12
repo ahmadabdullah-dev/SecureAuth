@@ -21,6 +21,13 @@ public static class DependencyInjection
                           .AllowCredentials();
                 });
         });
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOrSuperAdmin", policy =>
+            {
+                policy.RequireRole("Admin", "SuperAdmin");
+            });
+        });
         return services;
     }
 }
