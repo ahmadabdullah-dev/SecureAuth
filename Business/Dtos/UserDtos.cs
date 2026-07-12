@@ -18,3 +18,10 @@ public record RequestUpdateEmailDTO(
 public record UpdateEmailDTO(
     string Code
 );
+public record UpdateCurrentUserDTO(
+   string? FirstName,
+   string? LastName,
+   string? PhoneNumber,
+   string? Country,
+   DateOnly? DateOfBirth
+);

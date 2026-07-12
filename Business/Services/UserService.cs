@@ -141,5 +141,40 @@ public class UserService : IUserService
 
         return Result<string>.Success("Confirmation code sent to new email");
     }
+    public async Task<Result<string>> UpdateCurrentUserAsync(UpdateCurrentUserDTO dto)
+    {
+
+        var currentUserId = GetCurrentUserId();
+      
+        if (currentUserId == null)
+            return Result<string>.Failure("Unauthorized");
+
+        var currentUser = await _userManager.FindByIdAsync(currentUserId);
+
+        if (currentUser == null)
+            return Result<string>.Failure("User not found");
+
+        if (!string.IsNullOrWhiteSpace(dto.FirstName))
+            currentUser.FirstName = dto.FirstName.Trim();
+
+        if (!string.IsNullOrWhiteSpace(dto.LastName))
+            currentUser.LastName = dto.LastName.Trim();
+
+        if (!string.IsNullOrWhiteSpace(dto.PhoneNumber))
+            currentUser.PhoneNumber = dto.PhoneNumber.Trim();
+
+        if (!string.IsNullOrWhiteSpace(dto.Country))
+            currentUser.Country = dto.Country.Trim();
+
+        if (dto.DateOfBirth.HasValue)
+            currentUser.DateOfBirth = dto.DateOfBirth.Value;
+
+        var updateResult = await _userManager.UpdateAsync(currentUser);
+
+        if (!updateResult.Succeeded)
+            return Result<string>.Failure(string.Join(",", updateResult.Errors.Select(e => e.Description)));
+
+        return Result<string>.Success("User updated successfully");
+    }
 }
 
