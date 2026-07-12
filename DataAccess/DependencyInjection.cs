@@ -17,6 +17,10 @@ namespace DataAccess
             {
                 options.User.RequireUniqueEmail = true;
 
+                options.Lockout.AllowedForNewUsers = true;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(3);
+                options.Lockout.MaxFailedAccessAttempts = 10;
+
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 6;
             })

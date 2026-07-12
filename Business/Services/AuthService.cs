@@ -10,6 +10,8 @@ public class AuthService : IAuthService
     private readonly IUserService _userService;
 
     private const string MEMBER_ROLE = "Member";
+    private const string EMAIL_CONFIRMATION_PURPOSE = "EmailConfirmation";
+    private const string RESET_PASSWORD_PURPOSE = "ResetPassword";
 
     public AuthService(
         UserManager<AppUser> userManager,
@@ -41,7 +43,7 @@ public class AuthService : IAuthService
 
         await _userManager.AddToRoleAsync(newUser, MEMBER_ROLE);
         
-        await _emailService.SendCodeAsync(newUser, "Email Confirmation", "EmailConfirmation");
+        await _emailService.SendCodeAsync(newUser, "Email Confirmation", EMAIL_CONFIRMATION_PURPOSE);
 
         return Result<string>.Success("Registration successful. A confirmation code has been sent to your email.");
     }
@@ -51,12 +53,21 @@ public class AuthService : IAuthService
 
         if (user == null)
             return Result<string>.Failure("Invalid email or password");
+      
+        if (await _userManager.IsLockedOutAsync(user))
+            return Result<string>.Failure("User is locked. Please reset the password or wait 3 Minute.");
 
         var loginResult = await _signInManager.PasswordSignInAsync(user, dto.Password, dto.IsPersistence, false);
         
         if (!loginResult.Succeeded)
+        {
+            await _userManager.AccessFailedAsync(user);
             return Result<string>.Failure("Invalid email or password");
-        
+
+        }
+        await _userManager.ResetAccessFailedCountAsync(user);
+        await _userManager.SetLockoutEndDateAsync(user, null);
+
         return Result<string>.Success("Logged in successfully");
     }
     public async Task<Result<string>> LogoutAsync()
@@ -72,7 +83,7 @@ public class AuthService : IAuthService
         if (user == null)
             return Result<string>.Failure("User not found");
 
-        await _emailService.SendCodeAsync(user, "Reset Password", "ResetPassword");
+        await _emailService.SendCodeAsync(user, "Reset Password", RESET_PASSWORD_PURPOSE);
 
         return Result<string>.Success("Reset code sent successfully.");
     }
@@ -83,7 +94,7 @@ public class AuthService : IAuthService
         if (user == null)
             return Result<string>.Failure("Invalid or expired code.");
 
-        var isValid = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultEmailProvider, "ResetPassword", dto.Code);
+        var isValid = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultEmailProvider, RESET_PASSWORD_PURPOSE, dto.Code);
 
         if (!isValid)
             return Result<string>.Failure("Invalid or expired code.");
@@ -97,6 +108,9 @@ public class AuthService : IAuthService
         
         if (!addPasswordResult.Succeeded)
             return Result<string>.Failure(string.Join(",", addPasswordResult.Errors.Select(e => e.Description)));
+       
+        await _userManager.ResetAccessFailedCountAsync(user);
+        await _userManager.SetLockoutEndDateAsync(user, null);
 
         return Result<string>.Success("Password reset successfully.");
     }
@@ -115,7 +129,7 @@ public class AuthService : IAuthService
         if (await _userManager.IsEmailConfirmedAsync(user))
             return Result<string>.Failure("Email already confirmed");
 
-        await _emailService.SendCodeAsync(user, "Email Confirmation", "EmailConfirmation");
+        await _emailService.SendCodeAsync(user, "Email Confirmation", EMAIL_CONFIRMATION_PURPOSE);
 
         return Result<string>.Success("Email Confirmation code has been sent successfully");
 
@@ -135,7 +149,7 @@ public class AuthService : IAuthService
         if (await _userManager.IsEmailConfirmedAsync(user))
             return Result<string>.Failure("Email already confirmed");
 
-        var isValid = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultEmailProvider, "EmailConfirmation", dto.Code);
+        var isValid = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultEmailProvider, EMAIL_CONFIRMATION_PURPOSE, dto.Code);
 
         if (!isValid)
             return Result<string>.Failure("Invalid or expired code.");
