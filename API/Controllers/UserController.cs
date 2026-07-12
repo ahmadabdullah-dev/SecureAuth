@@ -27,4 +27,11 @@ public class UserController : ControllerBase
         return result.IsSuccess ? Ok(result) : BadRequest(result);
 
     }
+    [HttpPatch("update-email")]
+    public async Task<IActionResult> UpdateEmail(UpdateEmailDTO dto)
+    {
+        var result = await _userService.UpdateEmailAsync(dto);
+        return result.IsSuccess ? Ok(result) : BadRequest(result);
+
+    }
 }

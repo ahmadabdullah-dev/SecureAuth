@@ -15,3 +15,6 @@ public record UserDto(
 public record RequestUpdateEmailDTO(
     string NewEmail
 );
+public record UpdateEmailDTO(
+    string Code
+);

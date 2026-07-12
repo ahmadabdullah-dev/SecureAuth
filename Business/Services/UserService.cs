@@ -84,5 +84,38 @@ public class UserService : IUserService
         return Result<string>.Success("Confirmation code sent to new email");
 
     }
+    public async Task<Result<string>> UpdateEmailAsync(UpdateEmailDTO dto)
+    {
+        var currentUserId = GetCurrentUserId();
+
+        if (currentUserId == null)
+            return Result<string>.Failure("UnAuthorized");
+
+        var currentUser = await _userManager.FindByIdAsync(currentUserId);
+
+        if (currentUser == null)
+            return Result<string>.Failure("current user not found in db");
+
+        var isValid = await _userManager.VerifyUserTokenAsync(currentUser, TokenOptions.DefaultEmailProvider, EMAIL_UPDATE_PURPOSE, dto.Code);
+
+        if (!isValid)
+            return Result<string>.Failure("Invalid or expired code.");
+
+        if (currentUser.PendingEmail == null)
+            return Result<string>.Failure("No pending email was found");
+
+        currentUser.Email = currentUser.PendingEmail;
+
+        var updateResult = await _userManager.UpdateAsync(currentUser);
+
+        if (!updateResult.Succeeded)
+            return Result<string>.Failure(string.Join(",", updateResult.Errors.Select(e => e.Description)));
+
+        currentUser.PendingEmail = null;
+        await _userManager.UpdateAsync(currentUser);
+
+        return Result<string>.Success("Email updated successfully");
+
+    }
 }
 
