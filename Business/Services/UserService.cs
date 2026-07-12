@@ -117,5 +117,29 @@ public class UserService : IUserService
         return Result<string>.Success("Email updated successfully");
 
     }
+    public async Task<Result<string>> ResendUpdateEmailConfirmationCodeAsync()
+    {
+        var currentUserId = GetCurrentUserId();
+
+        if (currentUserId == null)
+            return Result<string>.Failure("UnAuthorized");
+
+        var currentUser = await _userManager.FindByIdAsync(currentUserId);
+
+        if (currentUser == null)
+            return Result<string>.Failure("current user not found in db");
+
+        if (string.IsNullOrEmpty(currentUser.PendingEmail))
+            return Result<string>.Failure("no pending email update request found. please request to update email again");
+
+        if (currentUser.PendingEmail == null)
+            return Result<string>.Failure("Please update your email then request this");
+
+        await _userManager.UpdateAsync(currentUser);
+
+        await _emailService.SendCodeAsync(currentUser, "Email Update", EMAIL_UPDATE_PURPOSE, currentUser.PendingEmail);
+
+        return Result<string>.Success("Confirmation code sent to new email");
+    }
 }
 

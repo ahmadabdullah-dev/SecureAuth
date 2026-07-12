@@ -34,4 +34,10 @@ public class UserController : ControllerBase
         return result.IsSuccess ? Ok(result) : BadRequest(result);
 
     }
+    [HttpPost("resend-update-email-confirmation-code")]
+    public async Task<IActionResult> ResendUpdateEmailConfirmationCode()
+    {
+        var result = await _userService.ResendUpdateEmailConfirmationCodeAsync();
+        return result.IsSuccess ? Ok(result) : BadRequest(result);
+    }
 }
