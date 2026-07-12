@@ -11,6 +11,7 @@ import LoginUserForm from "../../features/auth/LoginUserForm";
 import ErrorPage from "../../features/errors/ErrorPage";
 import ForgetPasswordForm from "../../features/auth/ForgetPasswordForm";
 import ResetPasswordForm from "../../features/auth/ResetPasswordForm";
+import ConfirmEmailForm from "../../features/auth/ConfirmEmailForm";
 
 export default function RedirectIfAuth() {
   const { CurrentUser } = useUser();
@@ -32,7 +33,9 @@ export const routes = createBrowserRouter([
         children: [
           { path: "home", element: <HomePage /> },
           { path: "profile", element: <Profile /> },
-          { path: "settings", element: <Settings /> },
+          { path: "settings", element: <Settings /> },  
+          {path: "confirm-email", element: <ConfirmEmailForm/>}
+
         ],
       },
       {
