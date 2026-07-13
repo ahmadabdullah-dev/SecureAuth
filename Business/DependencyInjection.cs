@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Business.Services.Background;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Business;
@@ -13,6 +14,8 @@ public static class DependencyInjection
         services.AddScoped<IAdminService,AdminService>();
 
         services.Configure<EmailConfiguration>(configuration.GetSection("EmailConfiguration"));
+     
+        services.AddHostedService<DeleteUsersWithUnconfirmedEmails>();
 
         return services;
 

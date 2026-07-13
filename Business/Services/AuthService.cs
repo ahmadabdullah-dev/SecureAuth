@@ -42,7 +42,7 @@ public class AuthService : IAuthService
         
         await _emailService.SendCodeAsync(newUser, "Email Confirmation", EmailPurposes.EMAIL_CONFIRMATION);
 
-        return Result<string>.Success("Registration successful. A confirmation code has been sent to your email.");
+        return Result<string>.Success("Registration successful. A confirmation code has been sent to your email. Please make sure to login and confirm your email in 15 minute otherwise you will be deleted");
     }
     public async Task<Result<string>> LoginAsync(LoginDto dto)
     {
