@@ -10,3 +10,19 @@ export type UserDto = {
   joinedDate: string;
   roles: string[];
 }
+export type RequestUpdateEmailDto = {
+  newEmail: string;
+}
+export type UpdateEmailDto = {
+  code: string  
+}
+export type UpdateCurrentUserDto = {
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  country: string;
+  dateOfBirth: string;
+}
+export type updateUserNameDto = {
+  newUserName: string
+}
