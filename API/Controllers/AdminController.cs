@@ -21,17 +21,23 @@ public class AdminController : ControllerBase
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
     [HttpPatch("assign-to-member-role")]
-    public async Task<IActionResult> AssignToMemberRole(string username)
+    public async Task<IActionResult> AssignToMemberRole(AssignToMemberRoleDto dto)
     {
-        var result = await _adminService.AssignToMemberRole(username);
+        var result = await _adminService.AssignToMemberRole(dto);
 
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
     [HttpPatch("assign-to-admin-role")]
-    public async Task<IActionResult> AssignToAdminRole(string username)
+    public async Task<IActionResult> AssignToAdminRole(AssignToAdminRoleDto dto)
     {
-        var result = await _adminService.AssignToAdminRole(username);
+        var result = await _adminService.AssignToAdminRole(dto);
 
+        return result.IsSuccess ? Ok(result) : BadRequest(result);
+    }
+    [HttpDelete("delete-user")]
+    public async Task<IActionResult> DeleteUser(DeleteUserDto dto)
+    {
+        var result = await _adminService.DeleteUserAsync(dto);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 }

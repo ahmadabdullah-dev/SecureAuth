@@ -1,5 +1,6 @@
 ﻿using DataAccess;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Business.Services;
 
@@ -58,14 +59,14 @@ public class AdminService : IAdminService
 
         return Result<PagedList<UserDto>>.Success(users);
     }
-    public async Task<Result<string>> AssignToAdminRole(string userName)
+    public async Task<Result<string>> AssignToAdminRole(AssignToAdminRoleDto dto)
     {
-        return await AssignRole(userName, UserRoles.ADMIN);
+        return await AssignRole(dto.username, UserRoles.ADMIN);
     }
 
-    public async Task<Result<string>> AssignToMemberRole(string userName)
+    public async Task<Result<string>> AssignToMemberRole(AssignToMemberRoleDto dto)
     {
-        return await AssignRole(userName, UserRoles.MEMBER);
+        return await AssignRole(dto.username, UserRoles.MEMBER);
     }
     //only super admin can assign roles
     private async Task<Result<string>> AssignRole(string userName, string targetRole)
@@ -107,6 +108,44 @@ public class AdminService : IAdminService
 
         }
         return Result<string>.Success($"User assigned to {targetRole} role successfully");
+
+    }
+    public async Task<Result<string>> DeleteUserAsync(DeleteUserDto dto)
+    {
+        var currentUserRole = _userService.GetCurrentUserRole();
+
+        if (currentUserRole == null)
+            return Result<string>.Failure("Unauthorized");
+
+        var user = await _userManager.FindByNameAsync(dto.username);
+
+        if (user == null)
+            return Result<string>.Failure("User not found in db");
+
+        var role = await _userManager.GetRolesAsync(user);
+
+        if (!role.Any())
+            return Result<string>.Failure("User has no role");
+
+        if (currentUserRole == UserRoles.SUPER_ADMIN)
+        {
+            var result = await _userManager.DeleteAsync(user);
+
+            return result.Succeeded
+                ? Result<string>.Success("User deleted successfully")
+                : Result<string>.Failure($"Delete failed: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+        }
+
+        if (currentUserRole == UserRoles.ADMIN && role[0] == UserRoles.MEMBER)
+        {
+            var result = await _userManager.DeleteAsync(user);
+
+            return result.Succeeded
+                ? Result<string>.Success("User deleted successfully")
+                : Result<string>.Failure($"Delete failed: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+        }
+
+        return Result<string>.Failure("Unauthorized to delete user");
 
     }
 }
