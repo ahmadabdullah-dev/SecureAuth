@@ -14,10 +14,11 @@ import { useState, type MouseEvent } from "react";
 import {ListItemIcon, ListItemText } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
+import TemporaryDrawer from "./TemporaryDrawer";
 export default function MenuAppBar() {
   const navigate = useNavigate();
   const { CurrentUser } = useUser();
-
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenu = (event: MouseEvent<HTMLElement>) => {
@@ -44,9 +45,16 @@ export default function MenuAppBar() {
             color="inherit"
             aria-label="menu"
             sx={{ mr: 2 }}
+            onClick={() => setDrawerOpen(true)}
           >
             <MenuIcon />
+            
           </IconButton>
+          <TemporaryDrawer
+            open={drawerOpen}
+            onClose={() => setDrawerOpen(false)}
+          />
+
           <Typography
             onClick={() => navigate("/")}
             variant="h6"
