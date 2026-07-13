@@ -1,4 +1,6 @@
-﻿namespace API;
+﻿using Microsoft.AspNetCore.RateLimiting;
+
+namespace API;
 
 public static class DependencyInjection
 {
@@ -27,6 +29,17 @@ public static class DependencyInjection
             {
                 policy.RequireRole("Admin", "SuperAdmin");
             });
+        });
+        services.AddRateLimiter(options =>
+        {
+            options.AddFixedWindowLimiter("rateLimiter", opt =>
+            {
+                opt.Window = TimeSpan.FromSeconds(10);
+                opt.PermitLimit = 5;
+                opt.QueueLimit = 0;
+            });
+
+            options.RejectionStatusCode = 429; 
         });
         return services;
     }

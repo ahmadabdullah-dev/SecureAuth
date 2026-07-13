@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers;
 
 [Authorize]
 [ApiController]
 [Route("api/user")]
+[EnableRateLimiting("rateLimiter")]
+
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;

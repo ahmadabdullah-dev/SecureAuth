@@ -24,6 +24,8 @@ using (var scope = app.Services.CreateScope())
     await seeder.Seed();
 }
 
+app.UseRateLimiter();
+
 app.UseHttpsRedirection();
 
 app.UseCors("AllowWeb");
