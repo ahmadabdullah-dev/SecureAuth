@@ -20,5 +20,18 @@ public class AdminController : ControllerBase
 
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
+    [HttpPatch("assign-to-member-role")]
+    public async Task<IActionResult> AssignToMemberRole(string username)
+    {
+        var result = await _adminService.AssignToMemberRole(username);
 
+        return result.IsSuccess ? Ok(result) : BadRequest(result);
+    }
+    [HttpPatch("assign-to-admin-role")]
+    public async Task<IActionResult> AssignToAdminRole(string username)
+    {
+        var result = await _adminService.AssignToAdminRole(username);
+
+        return result.IsSuccess ? Ok(result) : BadRequest(result);
+    }
 }

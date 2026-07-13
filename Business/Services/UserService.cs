@@ -24,7 +24,6 @@ public class UserService : IUserService
         _emailService = emailService;
         _signInManager = signInManager;
     }
-    private const string EMAIL_UPDATE_PURPOSE = "UpdateEmail";
     public string? GetCurrentUserId()
     {
         return _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -87,7 +86,7 @@ public class UserService : IUserService
 
         await _userManager.UpdateAsync(currentUser);
 
-        await _emailService.SendCodeAsync(currentUser, "Email Update", EMAIL_UPDATE_PURPOSE, dto.NewEmail);
+        await _emailService.SendCodeAsync(currentUser, "Email Update", EmailPurposes.EMAIL_UPDATE, dto.NewEmail);
 
         return Result<string>.Success("Confirmation code sent to new email");
 
@@ -104,7 +103,7 @@ public class UserService : IUserService
         if (currentUser == null)
             return Result<string>.Failure("current user not found in db");
 
-        var isValid = await _userManager.VerifyUserTokenAsync(currentUser, TokenOptions.DefaultEmailProvider, EMAIL_UPDATE_PURPOSE, dto.Code);
+        var isValid = await _userManager.VerifyUserTokenAsync(currentUser, TokenOptions.DefaultEmailProvider, EmailPurposes.EMAIL_UPDATE, dto.Code);
 
         if (!isValid)
             return Result<string>.Failure("Invalid or expired code.");
@@ -145,7 +144,7 @@ public class UserService : IUserService
 
         await _userManager.UpdateAsync(currentUser);
 
-        await _emailService.SendCodeAsync(currentUser, "Email Update", EMAIL_UPDATE_PURPOSE, currentUser.PendingEmail);
+        await _emailService.SendCodeAsync(currentUser, "Email Update", EmailPurposes.EMAIL_UPDATE, currentUser.PendingEmail);
 
         return Result<string>.Success("Confirmation code sent to new email");
     }

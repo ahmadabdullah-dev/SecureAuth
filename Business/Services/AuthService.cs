@@ -9,9 +9,6 @@ public class AuthService : IAuthService
     private readonly IEmailService _emailService;
     private readonly IUserService _userService;
 
-    private const string MEMBER_ROLE = "Member";
-    private const string EMAIL_CONFIRMATION_PURPOSE = "EmailConfirmation";
-    private const string RESET_PASSWORD_PURPOSE = "ResetPassword";
 
     public AuthService(
         UserManager<AppUser> userManager,
@@ -41,9 +38,9 @@ public class AuthService : IAuthService
         if (!registerResult.Succeeded)
             return Result<string>.Failure(registerResult.Errors.FirstOrDefault()?.Description ?? "Unexpected error happened");
 
-        await _userManager.AddToRoleAsync(newUser, MEMBER_ROLE);
+        await _userManager.AddToRoleAsync(newUser, UserRoles.MEMBER);
         
-        await _emailService.SendCodeAsync(newUser, "Email Confirmation", EMAIL_CONFIRMATION_PURPOSE);
+        await _emailService.SendCodeAsync(newUser, "Email Confirmation", EmailPurposes.EMAIL_CONFIRMATION);
 
         return Result<string>.Success("Registration successful. A confirmation code has been sent to your email.");
     }
@@ -83,7 +80,7 @@ public class AuthService : IAuthService
         if (user == null)
             return Result<string>.Failure("User not found");
 
-        await _emailService.SendCodeAsync(user, "Reset Password", RESET_PASSWORD_PURPOSE);
+        await _emailService.SendCodeAsync(user, "Reset Password", EmailPurposes.RESET_PASSWORD);
 
         return Result<string>.Success("Reset code sent successfully.");
     }
@@ -94,7 +91,7 @@ public class AuthService : IAuthService
         if (user == null)
             return Result<string>.Failure("Invalid or expired code.");
 
-        var isValid = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultEmailProvider, RESET_PASSWORD_PURPOSE, dto.Code);
+        var isValid = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultEmailProvider, EmailPurposes.RESET_PASSWORD, dto.Code);
 
         if (!isValid)
             return Result<string>.Failure("Invalid or expired code.");
@@ -129,7 +126,7 @@ public class AuthService : IAuthService
         if (await _userManager.IsEmailConfirmedAsync(user))
             return Result<string>.Failure("Email already confirmed");
 
-        await _emailService.SendCodeAsync(user, "Email Confirmation", EMAIL_CONFIRMATION_PURPOSE);
+        await _emailService.SendCodeAsync(user, "Email Confirmation", EmailPurposes.EMAIL_CONFIRMATION);
 
         return Result<string>.Success("Email Confirmation code has been sent successfully");
 
@@ -149,7 +146,7 @@ public class AuthService : IAuthService
         if (await _userManager.IsEmailConfirmedAsync(user))
             return Result<string>.Failure("Email already confirmed");
 
-        var isValid = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultEmailProvider, EMAIL_CONFIRMATION_PURPOSE, dto.Code);
+        var isValid = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultEmailProvider, EmailPurposes.EMAIL_CONFIRMATION, dto.Code);
 
         if (!isValid)
             return Result<string>.Failure("Invalid or expired code.");
