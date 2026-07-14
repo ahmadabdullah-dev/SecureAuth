@@ -5,7 +5,7 @@ import App from "../App";
 import RequireAuth from "./RequireAuth";
 import HomePage from "../../features/home/HomePage";
 import Profile from "../../features/home/Profile";
-import Settings from "../../features/home/Settings";
+import Settings from "../../features/home/Settings/Settings";
 import { useUser } from "../../lib/hooks/useUser";
 import LoginUserForm from "../../features/auth/LoginUserForm";
 import ErrorPage from "../../features/errors/ErrorPage";
