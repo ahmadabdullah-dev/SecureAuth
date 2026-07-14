@@ -37,9 +37,12 @@ export default function MenuAppBar() {
       <AppBar
         sx={{ display: "flex", justifyContent: "space-between" }}
         position="static"
-      >
-        <Toolbar>
-          <IconButton
+      >     
+         <Toolbar>
+
+        {CurrentUser.data?.isSuccess && (
+          <div>
+            <IconButton
             size="large"
             edge="start"
             color="inherit"
@@ -54,6 +57,9 @@ export default function MenuAppBar() {
             open={drawerOpen}
             onClose={() => setDrawerOpen(false)}
           />
+          </div>
+          
+          )}
 
           <Typography
             onClick={() => navigate("/")}

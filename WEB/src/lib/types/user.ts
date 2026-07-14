@@ -8,7 +8,7 @@ export type UserDto = {
   emailConfirmed: boolean;
   birthDate: string | null; 
   joinedDate: string;
-  roles: string[];
+  role: string;
 }
 export type RequestUpdateEmailDto = {
   newEmail: string;
