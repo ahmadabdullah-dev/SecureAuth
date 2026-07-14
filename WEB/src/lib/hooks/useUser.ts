@@ -18,10 +18,13 @@ export const useUser = () =>
         },
     });
     const UpdateEmail = useMutation({
-        mutationFn: async (creds: UpdateEmailDto) => {
-         const response = await agent.patch("/user/update-email",creds);
-         return response.data;
-        },
+      mutationFn: async (creds: UpdateEmailDto) => {
+        const response = await agent.patch("/user/update-email", creds);
+        return response.data;
+      },
+      onSuccess: () => {
+        window.location.reload();
+      },
     });
     const ResendUpdateEmailConfirmationCode = useMutation({
         mutationFn: async () => {
@@ -31,14 +34,23 @@ export const useUser = () =>
     });
      const UpdateUserName = useMutation({
        mutationFn: async (creds: updateUserNameDto) => {
-         const response = await agent.patch("/user/update-current-username", creds);
+         const response = await agent.patch(
+           "/user/update-current-username",
+           creds,
+         );
          return response.data;
        },
-    });
+       onSuccess: () => {
+         window.location.reload();
+       },
+     });
      const UpdateCurrentUser = useMutation({
        mutationFn: async (creds: Partial<UpdateCurrentUserDto>) => {
-         const response = await agent.put("/user/update-current-user",creds);
+         const response = await agent.put("/user/update-current-user", creds);
          return response.data;
+       },
+       onSuccess: () => {
+         window.location.reload();
        },
      });
      const DeleteCurrentUser = useMutation({
@@ -46,6 +58,9 @@ export const useUser = () =>
          const response = await agent.delete("/user/delete-current-user");
          return response.data;
         },
+       onSuccess: () =>{
+        window.location.reload();
+      }
     });
 
     return {

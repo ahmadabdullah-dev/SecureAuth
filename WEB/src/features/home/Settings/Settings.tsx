@@ -11,11 +11,13 @@ import {
 import UpdateEmail from "./UpdateEmail";
 import UpdateCurrentUser from "./UpdateUser";
 import UpdateUserName from "./UpdateUserName";
+import DeleteUser from "./DeleteUser";
 
 const SECTIONS = [
   { label: "Profile", component: <UpdateCurrentUser /> },
   { label: "Username", component: <UpdateUserName /> },
   { label: "Email", component: <UpdateEmail /> },
+  { label: "Danger Zone", component: <DeleteUser /> },
 ] as const;
 
 export default function Settings() {
