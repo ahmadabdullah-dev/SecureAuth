@@ -29,7 +29,22 @@ export default function UpdateCurrentUser() {
   });
 
   const onSubmit = (creds: UpdateCurrentUserDto) => {
-    UpdateCurrentUser.mutateAsync(creds, {
+    // Only send fields that were actually filled in
+    const filledFields = Object.fromEntries(
+      Object.entries(creds).filter(
+        ([, value]) => value !== "" && value != null,
+      ),
+    ) as Partial<UpdateCurrentUserDto>;
+
+    if (Object.keys(filledFields).length === 0) {
+      setMessage({
+        severity: "error",
+        text: "Fill at least one field to update.",
+      });
+      return;
+    }
+
+    UpdateCurrentUser.mutateAsync(filledFields, {
       onSuccess: (data) => {
         reset();
         setMessage({
@@ -62,7 +77,7 @@ export default function UpdateCurrentUser() {
         label="First Name"
         fullWidth
         size="small"
-        {...register("firstName", { required: "First name is required" })}
+        {...register("firstName")}
         error={!!errors.firstName}
         helperText={errors.firstName?.message}
       />
@@ -71,7 +86,7 @@ export default function UpdateCurrentUser() {
         label="Last Name"
         fullWidth
         size="small"
-        {...register("lastName", { required: "Last name is required" })}
+        {...register("lastName")}
         error={!!errors.lastName}
         helperText={errors.lastName?.message}
       />
@@ -80,7 +95,7 @@ export default function UpdateCurrentUser() {
         label="Phone Number"
         fullWidth
         size="small"
-        {...register("phoneNumber", { required: "Phone number is required" })}
+        {...register("phoneNumber")}
         error={!!errors.phoneNumber}
         helperText={errors.phoneNumber?.message}
       />
@@ -89,7 +104,7 @@ export default function UpdateCurrentUser() {
         label="Country"
         fullWidth
         size="small"
-        {...register("country", { required: "Country is required" })}
+        {...register("country")}
         error={!!errors.country}
         helperText={errors.country?.message}
       />
@@ -100,7 +115,7 @@ export default function UpdateCurrentUser() {
         fullWidth
         size="small"
         slotProps={{ inputLabel: { shrink: true } }}
-        {...register("dateOfBirth", { required: "Date of birth is required" })}
+        {...register("dateOfBirth")}
         error={!!errors.dateOfBirth}
         helperText={errors.dateOfBirth?.message}
       />

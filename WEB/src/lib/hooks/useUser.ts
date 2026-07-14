@@ -36,7 +36,7 @@ export const useUser = () =>
        },
     });
      const UpdateCurrentUser = useMutation({
-       mutationFn: async (creds: UpdateCurrentUserDto) => {
+       mutationFn: async (creds: Partial<UpdateCurrentUserDto>) => {
          const response = await agent.put("/user/update-current-user",creds);
          return response.data;
        },
