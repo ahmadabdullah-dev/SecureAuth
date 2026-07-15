@@ -3,3 +3,7 @@ export type Result<T> = {
   value: T | null;
   error: string | null;
 };
+export type PaginationParams = {
+  page: number;
+  pageSize: number;
+}
