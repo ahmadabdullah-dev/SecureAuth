@@ -12,15 +12,28 @@ import ErrorPage from "../../features/errors/ErrorPage";
 import ForgetPasswordForm from "../../features/auth/ForgetPasswordForm";
 import ResetPasswordForm from "../../features/auth/ResetPasswordForm";
 import ConfirmEmailForm from "../../features/auth/ConfirmEmailForm";
+import AdminDashboard from "../../features/admin/AdminDashboard";
 
-export default function RedirectIfAuth() {
+export function RedirectIfAuth() {
   const { CurrentUser } = useUser();
 
   if (CurrentUser.isLoading) return <div>Loading...</div>;
 
   return CurrentUser.data?.value ? <Navigate to="/home" replace /> : <Outlet />;
 }
+export function RedirectIfNotAdmin() {
+  const { CurrentUser } = useUser();
 
+  if (CurrentUser.isLoading) return <div>Loading...</div>;
+
+  const role = CurrentUser.data?.value?.role;
+
+  return role !== "SuperAdmin" && role !== "Admin" ? (
+    <Navigate to="/home" replace />
+  ) : (
+    <Outlet />
+  );
+}
 export const routes = createBrowserRouter([
   {
     path: "/",
@@ -33,9 +46,12 @@ export const routes = createBrowserRouter([
         children: [
           { path: "home", element: <HomePage /> },
           { path: "profile", element: <Profile /> },
-          { path: "settings", element: <Settings /> },  
-          {path: "confirm-email", element: <ConfirmEmailForm/>}
-
+          { path: "settings", element: <Settings /> },
+          { path: "confirm-email", element: <ConfirmEmailForm /> },
+          {
+            element: <RedirectIfNotAdmin />,
+            children: [{ path: "admin", element: <AdminDashboard /> }],
+          },
         ],
       },
       {
@@ -44,8 +60,7 @@ export const routes = createBrowserRouter([
           { path: "register", element: <RegisterUserForm /> },
           { path: "login", element: <LoginUserForm /> },
           { path: "forget-password", element: <ForgetPasswordForm /> },
-          { path: "reset-password/:email", element: <ResetPasswordForm /> } 
-
+          { path: "reset-password/:email", element: <ResetPasswordForm /> },
         ],
       },
       { path: "*", element: <NotFound /> },
