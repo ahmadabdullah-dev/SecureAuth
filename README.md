@@ -8,13 +8,11 @@ As a junior developer, I noticed I was rewriting the same foundational code for 
 ## Tech Stack
  
 - **Backend:** .NET, Entity Framework Core (Code-First), PostgreSQL, ASP.NET Identity
-- **Frontend:** React, TypeScript, TanStack Query, MUI (Material UI)
-- **Services:** Cloudinary (file uploads), SMTP (email)
- 
+- **Frontend:** React, TypeScript, TanStack Query, MUI (Material UI) 
 ## Features
  
 ### Backend
-- **Layered architecture:** Entities => Data Access => Business => API
+- **Layered architecture:** Data Access => Business => API
 - **Repository pattern** for data access
 - **Result pattern** for consistent success/error handling across services
 - **Per-layer dependency injection** (each layer registers its own services)
@@ -26,7 +24,6 @@ As a junior developer, I noticed I was rewriting the same foundational code for 
   - 6-digit verification code
 - **Role-based authorization**
 - **Admin panel** for platform control and settings.
-- **File upload service** (Cloudinary integration)
 - **Email service** (SMTP)
 - Code-first EF Core migrations with PostgreSQL
 ### Frontend
