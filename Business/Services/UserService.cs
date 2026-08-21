@@ -244,5 +244,26 @@ public class UserService : IUserService
         return Result<string>.Failure(ServiceHelper.GetFirstError(deleteResult), 400);
 
     }
+    public async Task<Result<UserDto>> GetUserByUserNameAsync(string userName)
+    {
+        var user = await _userManager.FindByNameAsync(userName);
+
+        if (user == null)
+            return Result<UserDto>.Failure("User not found",404);
+
+        var role = (await _userManager.GetRolesAsync(user)).First();
+
+        var userDto = new UserDto
+        {
+            Id = user.Id,
+            UserName = user.UserName!,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email!,
+            IsEmailConfirmed = user.EmailConfirmed,
+            Role = role
+        };
+        return Result<UserDto>.Success(userDto);
+    }
 }
 
