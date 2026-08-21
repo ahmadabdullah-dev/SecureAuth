@@ -8,7 +8,7 @@ namespace API.Controllers;
 [Route("api/auth")]
 [EnableRateLimiting("rateLimiter")]
 
-public class AuthController : ControllerBase
+public class AuthController : BaseApiController
 {
     private readonly IAuthService _authService;
     public AuthController(IAuthService authService)
@@ -20,8 +20,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register(RegisterDto dto)
     {
         var result = await _authService.RegisterAsync(dto);
-
-        return result.IsSuccess ? Ok(result) : BadRequest(result);
+        return HandleResult(result);
     }
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto dto)

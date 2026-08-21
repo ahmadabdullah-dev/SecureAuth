@@ -24,25 +24,37 @@ public class AuthService : IAuthService
         _emailService = emailService;
         _userService = userService;
     }
-    public async Task<Result<string>> RegisterAsync(RegisterDto dto)   
+    public async Task<Result<string>> RegisterAsync(RegisterDto dto)
     {
         var newUser = new AppUser
         {
-                UserName = dto.UserName,
-                Email = dto.Email,
-                EmailConfirmed = false
+            UserName = dto.Email,
+            Email = dto.Email,
+            EmailConfirmed = false,
         };
 
-        var registerResult = await _userManager.CreateAsync(newUser,dto.Password);
-        
+        var registerResult = await _userManager.CreateAsync(newUser, dto.Password);
+
         if (!registerResult.Succeeded)
-            return Result<string>.Failure(registerResult.Errors.FirstOrDefault()?.Description ?? "Unexpected error happened");
+            return Result<string>.Failure(ServiceHelper.GetFirstError(registerResult), 400);
 
-        await _userManager.AddToRoleAsync(newUser, UserRoles.MEMBER);
-        
-        await _emailService.SendCodeAsync(newUser, "Email Confirmation", EmailPurposes.EMAIL_CONFIRMATION);
+        var roleResult = await _userManager.AddToRoleAsync(newUser, UserRoles.MEMBER);
 
-        return Result<string>.Success("Registration successful. A confirmation code has been sent to your email. Please make sure to login and confirm your email in 15 minute otherwise you will be deleted");
+        if (!roleResult.Succeeded)
+        {
+            await _userManager.DeleteAsync(newUser);
+            return Result<string>.Failure(ServiceHelper.GetFirstError(roleResult), 400);
+        }
+        try
+        {
+            await _emailService.SendCodeAsync(newUser, "Email Confirmation", EmailPurposes.EMAIL_CONFIRMATION);
+        }
+        catch (Exception ex)
+        {
+            await _userManager.DeleteAsync(newUser);
+            return Result<string>.Failure(ex.Message, 400);
+        }
+        return Result<string>.Success("Registered successfully.");
     }
     public async Task<Result<string>> LoginAsync(LoginDto dto)
     {
