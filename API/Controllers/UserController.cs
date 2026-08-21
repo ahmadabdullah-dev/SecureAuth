@@ -40,7 +40,7 @@ public class UserController : BaseApiController
     public async Task<IActionResult> UpdateCurrentUser(UpdateCurrentUserDto dto)
     {
         var result = await _userService.UpdateCurrentUserAsync(dto);
-        return result.IsSuccess ? Ok(result) : BadRequest(result);
+        return HandleResult(result);
     }
     [HttpPatch("update-current-username")]
     public async Task<IActionResult> UpdatUserName(UpdateUserNameDto dto)

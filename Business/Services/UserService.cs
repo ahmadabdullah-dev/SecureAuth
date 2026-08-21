@@ -167,12 +167,12 @@ public class UserService : IUserService
         var currentUserId = GetCurrentUserId();
       
         if (currentUserId == null)
-            return Result<string>.Failure("Unauthorized");
+            return Result<string>.Failure("Unauthorized", 401);
 
         var currentUser = await _userManager.FindByIdAsync(currentUserId);
 
         if (currentUser == null)
-            return Result<string>.Failure("User not found");
+            return Result<string>.Failure("User not found",404);
 
         if (!string.IsNullOrWhiteSpace(dto.FirstName))
             currentUser.FirstName = dto.FirstName.Trim();
@@ -192,7 +192,7 @@ public class UserService : IUserService
         var updateResult = await _userManager.UpdateAsync(currentUser);
 
         if (!updateResult.Succeeded)
-            return Result<string>.Failure(string.Join(",", updateResult.Errors.Select(e => e.Description)));
+            return Result<string>.Failure(ServiceHelper.GetFirstError(updateResult),400);
 
         return Result<string>.Success("User updated successfully");
     }
