@@ -33,14 +33,13 @@ public class AuthController : BaseApiController
     public async Task<IActionResult> Logout()
     {
         var result = await _authService.LogoutAsync();
-
-        return result.IsSuccess ? Ok(result) : Unauthorized(result);
+        return HandleResult(result);
     }
     [HttpPost("forget-password")]
-    public async Task<IActionResult> ForgetPassword(ForgetPasswordDto dto)
+    public async Task<IActionResult> ForgetPassword(string email)
     {
-        var result = await _authService.ForgetPasswordAsync(dto);
-        return result.IsSuccess ? Ok(result) : BadRequest(result);
+        var result = await _authService.ForgetPasswordAsync(email);
+        return HandleResult(result);    
     }
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)

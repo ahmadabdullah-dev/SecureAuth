@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace Business.Services;
 
@@ -8,13 +9,15 @@ public class AuthService : IAuthService
     private readonly SignInManager<AppUser> _signInManager;
     private readonly IEmailService _emailService;
     private readonly IUserService _userService;
+    private readonly ILogger<AuthService> _logger;
 
 
     public AuthService(
         UserManager<AppUser> userManager,
         SignInManager<AppUser> signInManager,
         IEmailService emailService,
-         IUserService userService
+         IUserService userService,
+         ILogger<AuthService> logger
 
 
     )
@@ -23,6 +26,7 @@ public class AuthService : IAuthService
         _signInManager = signInManager;
         _emailService = emailService;
         _userService = userService;
+        _logger = logger;
     }
     public async Task<Result<string>> RegisterAsync(RegisterDto dto)
     {
@@ -79,24 +83,30 @@ public class AuthService : IAuthService
 
         return Result<string>.Success("Logged in successfully");
     }
-
     public async Task<Result<string>> LogoutAsync()
     {
         await _signInManager.SignOutAsync();
-
         return Result<string>.Success("Logged out successfully");
     }
-    public async Task<Result<string>> ForgetPasswordAsync(ForgetPasswordDto dto)
+    public async Task<Result<string>> ForgetPasswordAsync(string email)
     {
-        var user = await _userManager.FindByEmailAsync(dto.Email);
+        var user = await _userManager.FindByEmailAsync(email);
 
         if (user == null)
-            return Result<string>.Failure("User not found");
-
-        await _emailService.SendCodeAsync(user, "Reset Password", EmailPurposes.RESET_PASSWORD);
+            return Result<string>.Failure("User not found", 404);
+        try
+        {
+            await _emailService.SendCodeAsync(user, "Reset Password", EmailPurposes.PASSWORD_RESET);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return Result<string>.Failure("Unexpected error happened while sending Password reset code", 400);
+        }
 
         return Result<string>.Success("Reset code sent successfully.");
     }
+
     public async Task<Result<string>> ResetPasswordAsync(ResetPasswordDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
