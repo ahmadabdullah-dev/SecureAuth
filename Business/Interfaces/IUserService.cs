@@ -9,7 +9,7 @@ public interface IUserService
     Task<Result<string>> UpdateCurrentEmailAsync(string code);
     Task<Result<string>> ResendUpdateCurrentEmailConfirmationCodeAsync();
     Task<Result<string>> UpdateCurrentUserAsync(UpdateCurrentUserDto dto);
-    Task<Result<string>> UpdateUserNameAsync(UpdateUserNameDto dto);
+    Task<Result<string>> UpdateCurrentUserNameAsync(string userName);
     Task<Result<string>> DeleteCurrentUserAsync();
 }
 

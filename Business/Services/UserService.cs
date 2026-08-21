@@ -196,27 +196,27 @@ public class UserService : IUserService
 
         return Result<string>.Success("User updated successfully");
     }
-    public async Task<Result<string>> UpdateUserNameAsync(UpdateUserNameDto dto)
+    public async Task<Result<string>> UpdateCurrentUserNameAsync(string newUserName)
     {
         var currentUserId = GetCurrentUserId();
 
         if (currentUserId == null)
-            return Result<string>.Failure("Unauthorized");
+            return Result<string>.Failure("Unauthorized",401);
 
         var currentUser = await _userManager.FindByIdAsync(currentUserId);
 
         if (currentUser == null)
-            return Result<string>.Failure("User not found");
+            return Result<string>.Failure("User not found",404);
 
-        if (string.Equals(currentUser.UserName, dto.NewUserName, StringComparison.OrdinalIgnoreCase))
-            return Result<string>.Failure("You cannot use the same username");
+        if (string.Equals(currentUser.UserName, newUserName, StringComparison.OrdinalIgnoreCase))
+            return Result<string>.Failure("You cannot use the same UserName",409);
 
-        currentUser.UserName = dto.NewUserName;
+        currentUser.UserName = newUserName;
 
         var updateResult = await _userManager.UpdateAsync(currentUser);
 
         if (!updateResult.Succeeded)
-            return Result<string>.Failure(string.Join(",", updateResult.Errors.Select(e => e.Description)));
+            return Result<string>.Failure(ServiceHelper.GetFirstError(updateResult),400);
 
         return Result<string>.Success("UserName updated successfully");
 
