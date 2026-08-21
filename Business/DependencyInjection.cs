@@ -15,8 +15,6 @@ public static class DependencyInjection
 
         services.Configure<EmailConfiguration>(configuration.GetSection("EmailConfiguration"));
      
-        services.AddHostedService<DeleteUsersWithUnconfirmedEmails>();
-
         return services;
 
     }
