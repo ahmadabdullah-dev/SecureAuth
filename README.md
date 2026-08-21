@@ -3,7 +3,7 @@
  
 ## Why I Built This
  
-As a junior developer, I noticed I was rewriting the same foundational code for every new project. So I created this repo template to solve that by giving me a clean, reusable base so I can focus on actual feature work instead of re-solving the same problems each time.
+As a developer, I noticed I was rewriting the same foundational code for every new project. So I created this repo template to solve that by giving me a clean, reusable base so I can focus on actual feature work instead of re-solving the same problems each time.
  
 ## Tech Stack
  
@@ -23,14 +23,12 @@ As a junior developer, I noticed I was rewriting the same foundational code for 
   - Change email
   - 6-digit verification code
 - **Role-based authorization**
-- **Admin panel** for platform control and settings.
 - **Email service** (SMTP)
-- Code-first EF Core migrations with PostgreSQL
 ### Frontend
 - Structured into `app`, `libs`, and `features` for scalability
 - TanStack Query for server state management
 - MUI for UI components
-- Full CRUD UI for user management, roles, and admin settings
+- Full CRUD UI and Auth for user 
 
 ## Database Migrations
 Navigate to the solution root first:
