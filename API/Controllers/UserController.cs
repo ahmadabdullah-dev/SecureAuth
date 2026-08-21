@@ -52,7 +52,7 @@ public class UserController : BaseApiController
     public async Task<IActionResult> DeleteCurrentUser()
     {
         var result = await _userService.DeleteCurrentUserAsync();
-        return result.IsSuccess ? Ok(result) : BadRequest(result);
+        return HandleResult(result);
     }
     [HttpGet("current-user-role")]
     public async Task<IActionResult> GetCurrentUserRole()

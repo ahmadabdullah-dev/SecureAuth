@@ -113,7 +113,7 @@ public class UserService : IUserService
         if (currentUser == null)
             return Result<string>.Failure("Current user not found in db",404);
 
-        var isValid = await _userManager.VerifyUserTokenAsync(currentUser, TokenOptions.DefaultEmailProvider, EmailPurposes.EMAIL_UPDATE, dto.Code);
+        var isValid = await _userManager.VerifyUserTokenAsync(currentUser, TokenOptions.DefaultEmailProvider, EmailPurposes.EMAIL_UPDATE, code);
 
         if (!isValid)
             return Result<string>.Failure("Invalid or expired code.",400);
@@ -226,22 +226,22 @@ public class UserService : IUserService
         var currentUserId = GetCurrentUserId();
 
         if (currentUserId == null)
-            return Result<string>.Failure("Unauthorized");
+            return Result<string>.Failure("Unauthorized",401);
 
         var currentUser = await _userManager.FindByIdAsync(currentUserId);
 
         if (currentUser == null)
-            return Result<string>.Failure("User not found");
+            return Result<string>.Failure("User not found",404);
 
-        var result = await _userManager.DeleteAsync(currentUser);
+        var deleteResult = await _userManager.DeleteAsync(currentUser);
 
-        if (result.Succeeded)
+        if (deleteResult.Succeeded)
         {
             await _signInManager.SignOutAsync();
             return Result<string>.Success("User deleted successfully");
 
         }
-        return Result<string>.Failure(string.Join(",", result.Errors.Select(e => e.Description)));
+        return Result<string>.Failure(ServiceHelper.GetFirstError(deleteResult), 400);
 
     }
 }
