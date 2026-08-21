@@ -5,7 +5,7 @@ public interface IUserService
     string? GetCurrentUserId();
     string? GetCurrentUserRole();
     Task<Result<UserDto>> CurrentUserAsync();
-    Task<Result<string>> RequestUpdateEmailAsync(RequestUpdateEmailDto dto);
+    Task<Result<string>> RequestUpdateCurrentEmailAsync(string newEmail);
     Task<Result<string>> UpdateEmailAsync(UpdateEmailDto dto);
     Task<Result<string>> ResendUpdateEmailConfirmationCodeAsync();
     Task<Result<string>> UpdateCurrentUserAsync(UpdateCurrentUserDto dto);

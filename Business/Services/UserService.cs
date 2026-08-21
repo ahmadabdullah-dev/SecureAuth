@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 
 namespace Business.Services;
@@ -10,12 +11,14 @@ public class UserService : IUserService
     private readonly UserManager<AppUser> _userManager;
     private readonly IEmailService _emailService;
     private readonly SignInManager<AppUser> _signInManager;
+    private readonly ILogger<UserService> _logger;
 
     public UserService(
         IHttpContextAccessor httpContextAccessor,
         UserManager<AppUser> userManager,
         IEmailService emailService,
-        SignInManager<AppUser> signInManager
+        SignInManager<AppUser> signInManager,
+        ILogger<UserService> logger
 
     )
     {
@@ -23,6 +26,7 @@ public class UserService : IUserService
         _userManager = userManager;
         _emailService = emailService;
         _signInManager = signInManager;
+        _logger = logger;
     }
     public string? GetCurrentUserId()
     {
@@ -57,33 +61,44 @@ public class UserService : IUserService
         return Result<UserDto>.Success(dto);
 
     }
-    public async Task<Result<string>> RequestUpdateEmailAsync(RequestUpdateEmailDto dto)
+    public async Task<Result<string>> RequestUpdateCurrentEmailAsync(string newEmail)
     {
         var currentUserId = GetCurrentUserId();
 
         if (currentUserId == null)
-            return Result<string>.Failure("UnAuthorized");
+            return Result<string>.Failure("UnAuthorized",401);
 
         var currentUser = await _userManager.FindByIdAsync(currentUserId);
 
         if (currentUser == null)
-            return Result<string>.Failure("current user not found in db");
+            return Result<string>.Failure("Current user not found in db",404);
 
-        if (string.Equals(currentUser.Email, dto.NewEmail, StringComparison.Ordinal))
-            return Result<string>.Failure("You cannot change with the same email");
+        if (string.Equals(currentUser.Email, newEmail, StringComparison.OrdinalIgnoreCase))
+            return Result<string>.Failure("You cannot change with the same email",409);
 
-        var isNewEmailExists = await _userManager.FindByEmailAsync(dto.NewEmail);
+        var isNewEmailExists = await _userManager.FindByEmailAsync(newEmail);
 
         if (isNewEmailExists != null)
-            return Result<string>.Failure($"Email {dto.NewEmail} already taken ");
+            return Result<string>.Failure($"Email {newEmail} already taken", 400);
 
-        currentUser.PendingEmail = dto.NewEmail;
+        currentUser.PendingEmail = newEmail;
 
-        await _userManager.UpdateAsync(currentUser);
+        var result = await _userManager.UpdateAsync(currentUser);
 
-        await _emailService.SendCodeAsync(currentUser, "Email Update", EmailPurposes.EMAIL_UPDATE, dto.NewEmail);
+        try
+        {
+            await _emailService.SendCodeAsync(currentUser, "Email Update", EmailPurposes.EMAIL_UPDATE, newEmail);
 
-        return Result<string>.Success("Confirmation code sent to new email");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while sending confirmation code to new email.");
+            return Result<string>.Failure("Failed to send confirmation code. Please try again later.",40);
+        }
+        if (result.Succeeded)
+            return Result<string>.Success("Confirmation code sent to new email");
+
+        return Result<string>.Failure(ServiceHelper.GetFirstError(result),400);
 
     }
     public async Task<Result<string>> UpdateEmailAsync(UpdateEmailDto dto)

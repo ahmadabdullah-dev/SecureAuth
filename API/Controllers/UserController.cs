@@ -22,11 +22,10 @@ public class UserController : BaseApiController
     }
     
     [HttpPost("request-update-current-email")]
-    public async Task<IActionResult> RequestUpdateCurrentEmail(RequestUpdateEmailDto dto)
+    public async Task<IActionResult> RequestUpdateCurrentEmail(string newEmail)
     {
-        var result = await _userService.RequestUpdateEmailAsync(dto);
-        return result.IsSuccess ? Ok(result) : BadRequest(result);
-
+        var result = await _userService.RequestUpdateCurrentEmailAsync(newEmail);
+        return HandleResult(result);
     }
     [HttpPatch("update-email")]
     public async Task<IActionResult> UpdateEmail(UpdateEmailDto dto)
