@@ -5,26 +5,24 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace API.Controllers;
 
 [Authorize]
-[ApiController]
-[Route("api/user")]
 [EnableRateLimiting("rateLimiter")]
 
-public class UserController : ControllerBase
+public class UserController : BaseApiController
 {
     private readonly IUserService _userService;
     public UserController(IUserService userService)
     {
         _userService = userService;
     }
-    [HttpGet("current-user")]
+    [HttpGet("current")]
     public async Task<IActionResult> CurrentUser()
     {
         var result = await _userService.CurrentUserAsync();
-        return result.IsSuccess ? Ok(result) : Unauthorized(result);
+        return HandleResult(result);
     }
     
-    [HttpPost("request-update-email")]
-    public async Task<IActionResult> RequestUpdateEmail(RequestUpdateEmailDto dto)
+    [HttpPost("request-update-current-email")]
+    public async Task<IActionResult> RequestUpdateCurrentEmail(RequestUpdateEmailDto dto)
     {
         var result = await _userService.RequestUpdateEmailAsync(dto);
         return result.IsSuccess ? Ok(result) : BadRequest(result);

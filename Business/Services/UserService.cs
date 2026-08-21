@@ -35,32 +35,27 @@ public class UserService : IUserService
     public async Task<Result<UserDto>> CurrentUserAsync()
     {
         var userId = GetCurrentUserId();
+        var role = GetCurrentUserRole();
 
-        if (string.IsNullOrEmpty(userId))
-            return Result<UserDto>.Failure("You must be logged in to perform this action.");
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(role))
+            return Result<UserDto>.Failure("You must be logged in to perform this action.", 403);
 
         var user = await _userManager.FindByIdAsync(userId);
 
         if (user == null)
-            return Result<UserDto>.Failure("We couldn't find your account. It may have been removed or deactivated.");
+            return Result<UserDto>.Failure("User not found!. It may have been removed or deactivated.", 404);
 
-        var roles = await _userManager.GetRolesAsync(user);
+        var dto = new UserDto
+        {
+            Id = userId,
+            FirstName = user.FirstName!,
+            LastName = user.LastName!,
+            Email = user.Email!,
+            IsEmailConfirmed = user.EmailConfirmed,
+            Role = role,
+        };
+        return Result<UserDto>.Success(dto);
 
-        var userDTO = new UserDto
-        (
-             user.UserName!,
-             user.FirstName,
-             user.LastName,
-             user.Email!,
-             user.PhoneNumber,
-             user.Country,
-             user.EmailConfirmed,
-             user.DateOfBirth,
-             user.CreatedDate,
-             roles[0]
-        );
-
-        return Result<UserDto>.Success(userDTO);
     }
     public async Task<Result<string>> RequestUpdateEmailAsync(RequestUpdateEmailDto dto)
     {
