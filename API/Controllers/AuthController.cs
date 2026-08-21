@@ -45,7 +45,7 @@ public class AuthController : BaseApiController
     public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
     {
         var result = await _authService.ResetPasswordAsync(dto);
-        return result.IsSuccess ? Ok(result) : BadRequest(result);
+        return HandleResult(result);
     }
     [Authorize]
     [HttpPost("resend-email-confirmation-code")]

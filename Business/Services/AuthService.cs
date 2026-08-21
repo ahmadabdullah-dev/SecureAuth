@@ -10,16 +10,15 @@ public class AuthService : IAuthService
     private readonly IEmailService _emailService;
     private readonly IUserService _userService;
     private readonly ILogger<AuthService> _logger;
-
+    private readonly ApplicationDbContext _appDbContext;
 
     public AuthService(
         UserManager<AppUser> userManager,
         SignInManager<AppUser> signInManager,
         IEmailService emailService,
          IUserService userService,
-         ILogger<AuthService> logger
-
-
+         ILogger<AuthService> logger,
+        ApplicationDbContext appDbContext
     )
     {
         _userManager = userManager;
@@ -27,6 +26,7 @@ public class AuthService : IAuthService
         _emailService = emailService;
         _userService = userService;
         _logger = logger;
+        _appDbContext = appDbContext;
     }
     public async Task<Result<string>> RegisterAsync(RegisterDto dto)
     {
@@ -106,34 +106,39 @@ public class AuthService : IAuthService
 
         return Result<string>.Success("Reset code sent successfully.");
     }
-
     public async Task<Result<string>> ResetPasswordAsync(ResetPasswordDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
 
         if (user == null)
-            return Result<string>.Failure("Invalid or expired code.");
+            return Result<string>.Failure("Invalid or expired code.", 404);
 
-        var isValid = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultEmailProvider, EmailPurposes.RESET_PASSWORD, dto.Code);
+        var isValid = await _userManager.VerifyUserTokenAsync(
+            user, TokenOptions.DefaultEmailProvider, EmailPurposes.RESET_PASSWORD, dto.Code);
 
         if (!isValid)
-            return Result<string>.Failure("Invalid or expired code.");
+            return Result<string>.Failure("Invalid or expired code.", 404);
+
+        await using var transaction = await _appDbContext.Database.BeginTransactionAsync();
 
         var removePasswordResult = await _userManager.RemovePasswordAsync(user);
-       
+
         if (!removePasswordResult.Succeeded)
-            return Result<string>.Failure(string.Join(",", removePasswordResult.Errors.Select(e => e.Description)));
+            return Result<string>.Failure(ServiceHelper.GetFirstError(removePasswordResult), 400);
 
         var addPasswordResult = await _userManager.AddPasswordAsync(user, dto.NewPassword);
-        
+
         if (!addPasswordResult.Succeeded)
-            return Result<string>.Failure(string.Join(",", addPasswordResult.Errors.Select(e => e.Description)));
-       
+            return Result<string>.Failure(ServiceHelper.GetFirstError(addPasswordResult), 400);
+
         await _userManager.ResetAccessFailedCountAsync(user);
         await _userManager.SetLockoutEndDateAsync(user, null);
 
+        await transaction.CommitAsync();
+
         return Result<string>.Success("Password reset successfully.");
     }
+
     public async Task<Result<string>> ResendEmailConfirmationCodeAsync()
     {
         var userId = _userService.GetCurrentUserId();
