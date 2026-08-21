@@ -134,29 +134,32 @@ public class UserService : IUserService
         return Result<string>.Success("Email updated successfully");
 
     }
-    public async Task<Result<string>> ResendUpdateEmailConfirmationCodeAsync()
+    public async Task<Result<string>> ResendUpdateCurrentEmailConfirmationCodeAsync()
     {
         var currentUserId = GetCurrentUserId();
 
         if (currentUserId == null)
-            return Result<string>.Failure("UnAuthorized");
+            return Result<string>.Failure("Unauthorized",401);
 
         var currentUser = await _userManager.FindByIdAsync(currentUserId);
 
         if (currentUser == null)
-            return Result<string>.Failure("current user not found in db");
+            return Result<string>.Failure("User not found",404);
 
         if (string.IsNullOrEmpty(currentUser.PendingEmail))
-            return Result<string>.Failure("no pending email update request found. please request to update email again");
+            return Result<string>.Failure("No pending email update request found. Please request an email update again.",404);
 
-        if (currentUser.PendingEmail == null)
-            return Result<string>.Failure("Please update your email then request this");
+        try
+        {
+            await _emailService.SendCodeAsync(currentUser, "Email Update", EmailPurposes.EMAIL_UPDATE, currentUser.PendingEmail);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while resending confirmation code to new email.");
+            return Result<string>.Failure("Failed to send confirmation code. Please try again later.", 400);
+        }
 
-        await _userManager.UpdateAsync(currentUser);
-
-        await _emailService.SendCodeAsync(currentUser, "Email Update", EmailPurposes.EMAIL_UPDATE, currentUser.PendingEmail);
-
-        return Result<string>.Success("Confirmation code sent to new email");
+        return Result<string>.Success("Confirmation code resent to new email");
     }
     public async Task<Result<string>> UpdateCurrentUserAsync(UpdateCurrentUserDto dto)
     {

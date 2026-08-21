@@ -24,17 +24,17 @@ public class UserController : BaseApiController
         var result = await _userService.RequestUpdateCurrentEmailAsync(newEmail);
         return HandleResult(result);
     }
-    [HttpPatch("update-email")]
+    [HttpPatch("update-current-email")]
     public async Task<IActionResult> UpdateCurrentEmail(string code)
     {
         var result = await _userService.UpdateCurrentEmailAsync(code);
         return HandleResult(result);
     }
-    [HttpPost("resend-update-email-confirmation-code")]
-    public async Task<IActionResult> ResendUpdateEmailConfirmationCode()
+    [HttpPost("resend-update-current-email-confirmation-code")]
+    public async Task<IActionResult> ResendUpdateCurrentEmailConfirmationCode()
     {
-        var result = await _userService.ResendUpdateEmailConfirmationCodeAsync();
-        return result.IsSuccess ? Ok(result) : BadRequest(result);
+        var result = await _userService.ResendUpdateCurrentEmailConfirmationCodeAsync();
+        return HandleResult(result);
     }
     [HttpPut("update-current-user")]
     public async Task<IActionResult> UpdateCurrentUser(UpdateCurrentUserDto dto)
