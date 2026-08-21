@@ -61,24 +61,25 @@ public class AuthService : IAuthService
         var user = await _userManager.FindByEmailAsync(dto.Email);
 
         if (user == null)
-            return Result<string>.Failure("Invalid email or password");
-      
+            return Result<string>.Failure("Invalid email or password", 401);
+
         if (await _userManager.IsLockedOutAsync(user))
-            return Result<string>.Failure("User is locked. Please reset the password or wait 3 Minute.");
+            return Result<string>.Failure("User is locked. Please reset the password or wait 3 Minute.", 400);
 
-        var loginResult = await _signInManager.PasswordSignInAsync(user, dto.Password, dto.IsPersistence, false);
-        
+        var loginResult = await _signInManager.PasswordSignInAsync(user, dto.Password, dto.IsPersistence, true);
+
+        if (loginResult.IsLockedOut)
+            return Result<string>.Failure("User is locked. Please reset the password or wait 3 Minute.", 400);
+
         if (!loginResult.Succeeded)
-        {
-            await _userManager.AccessFailedAsync(user);
-            return Result<string>.Failure("Invalid email or password");
+            return Result<string>.Failure("Invalid email or password", 401);
 
-        }
-        await _userManager.ResetAccessFailedCountAsync(user);
-        await _userManager.SetLockoutEndDateAsync(user, null);
+        if (user.LockoutEnd != null)
+            await _userManager.SetLockoutEndDateAsync(user, null);
 
         return Result<string>.Success("Logged in successfully");
     }
+
     public async Task<Result<string>> LogoutAsync()
     {
         await _signInManager.SignOutAsync();

@@ -26,8 +26,7 @@ public class AuthController : BaseApiController
     public async Task<IActionResult> Login(LoginDto dto)
     {
         var result = await _authService.LoginAsync(dto);
-
-        return result.IsSuccess ? Ok(result) : Unauthorized(result);
+        return HandleResult(result);
     }
     [Authorize]
     [HttpPost("logout")]
