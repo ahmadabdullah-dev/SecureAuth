@@ -101,32 +101,32 @@ public class UserService : IUserService
         return Result<string>.Failure(ServiceHelper.GetFirstError(result),400);
 
     }
-    public async Task<Result<string>> UpdateEmailAsync(UpdateEmailDto dto)
+    public async Task<Result<string>> UpdateCurrentEmailAsync(string code)
     {
         var currentUserId = GetCurrentUserId();
 
         if (currentUserId == null)
-            return Result<string>.Failure("UnAuthorized");
+            return Result<string>.Failure("UnAuthorized",401);
 
         var currentUser = await _userManager.FindByIdAsync(currentUserId);
 
         if (currentUser == null)
-            return Result<string>.Failure("current user not found in db");
+            return Result<string>.Failure("Current user not found in db",404);
 
         var isValid = await _userManager.VerifyUserTokenAsync(currentUser, TokenOptions.DefaultEmailProvider, EmailPurposes.EMAIL_UPDATE, dto.Code);
 
         if (!isValid)
-            return Result<string>.Failure("Invalid or expired code.");
+            return Result<string>.Failure("Invalid or expired code.",400);
 
         if (currentUser.PendingEmail == null)
-            return Result<string>.Failure("No pending email was found");
+            return Result<string>.Failure("No pending email was found",404);
 
         currentUser.Email = currentUser.PendingEmail;
 
         var updateResult = await _userManager.UpdateAsync(currentUser);
 
         if (!updateResult.Succeeded)
-            return Result<string>.Failure(string.Join(",", updateResult.Errors.Select(e => e.Description)));
+            return Result<string>.Failure(string.Join(",", updateResult.Errors.Select(e => e.Description)),400);
 
         currentUser.PendingEmail = null;
         await _userManager.UpdateAsync(currentUser);

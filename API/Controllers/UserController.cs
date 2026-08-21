@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers;
 
 [Authorize]
-[EnableRateLimiting("rateLimiter")]
-
 public class UserController : BaseApiController
 {
     private readonly IUserService _userService;
@@ -28,11 +25,10 @@ public class UserController : BaseApiController
         return HandleResult(result);
     }
     [HttpPatch("update-email")]
-    public async Task<IActionResult> UpdateEmail(UpdateEmailDto dto)
+    public async Task<IActionResult> UpdateCurrentEmail(string code)
     {
-        var result = await _userService.UpdateEmailAsync(dto);
-        return result.IsSuccess ? Ok(result) : BadRequest(result);
-
+        var result = await _userService.UpdateCurrentEmailAsync(code);
+        return HandleResult(result);
     }
     [HttpPost("resend-update-email-confirmation-code")]
     public async Task<IActionResult> ResendUpdateEmailConfirmationCode()
