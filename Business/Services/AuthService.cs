@@ -96,7 +96,7 @@ public class AuthService : IAuthService
             return Result<string>.Failure("User not found", 404);
         try
         {
-            await _emailService.SendCodeAsync(user, "Reset Password", EmailPurposes.PASSWORD_RESET);
+            await _emailService.SendCodeAsync(user, "Reset Password", EmailPurposes.RESET_PASSWORD);
         }
         catch (Exception ex)
         {
@@ -166,34 +166,34 @@ public class AuthService : IAuthService
         return Result<string>.Success("Email Confirmation code has been resent successfully");
 
     }
-
-    public async Task<Result<string>> ConfirmEmailAsync(ConfirmEmailDto dto)
+    public async Task<Result<string>> ConfirmEmailAsync(string code)
     {
         var userId = _userService.GetCurrentUserId();
 
         if (userId == null)
-            return Result<string>.Failure("Unauthorized");
+            return Result<string>.Failure("Unauthorized", 401);
 
         var user = await _userManager.FindByIdAsync(userId);
 
         if (user == null)
-            return Result<string>.Failure("Current user not found in db");
+            return Result<string>.Failure("Current user not found in db", 404);
 
         if (await _userManager.IsEmailConfirmedAsync(user))
-            return Result<string>.Failure("Email already confirmed");
+            return Result<string>.Failure("Email already confirmed", 400);
 
-        var isValid = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultEmailProvider, EmailPurposes.EMAIL_CONFIRMATION, dto.Code);
+        var isValid = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultEmailProvider, EmailPurposes.EMAIL_CONFIRMATION, code);
 
         if (!isValid)
-            return Result<string>.Failure("Invalid or expired code.");
+            return Result<string>.Failure("Invalid or expired code.", 404);
 
         user.EmailConfirmed = true;
 
         var updateResult = await _userManager.UpdateAsync(user);
-        
-        if(!updateResult.Succeeded)
-            Result<string>.Failure("Failed to confirm email.");
+
+        if (!updateResult.Succeeded)
+            return Result<string>.Failure(ServiceHelper.GetFirstError(updateResult), 400);
 
         return Result<string>.Success("Email confirmed successfully.");
     }
+
 }

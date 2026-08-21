@@ -56,9 +56,9 @@ public class AuthController : BaseApiController
     }
     [Authorize]
     [HttpPost("confirm-email")]
-    public async Task<IActionResult> ConfirmEmail(ConfirmEmailDto dto)
+    public async Task<IActionResult> ConfirmEmail(string email)
     {
-        var result = await _authService.ConfirmEmailAsync(dto);
-        return result.IsSuccess ? Ok(result) : BadRequest(result);
+        var result = await _authService.ConfirmEmailAsync(email);
+        return HandleResult(result);
     }
 }
