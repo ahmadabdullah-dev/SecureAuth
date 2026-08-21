@@ -52,7 +52,7 @@ public class AuthController : BaseApiController
     public async Task<IActionResult> ResendEmailConfirmationCode()
     {
         var result = await _authService.ResendEmailConfirmationCodeAsync();
-        return result.IsSuccess ? Ok(result) : BadRequest(result);
+        return HandleResult(result);
     }
     [Authorize]
     [HttpPost("confirm-email")]
