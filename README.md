@@ -1,12 +1,8 @@
 # SecureAuth With ASP.NET Identity
- Starter API template with layered architecture, built to eliminate repetitive project setup.
- 
-## Why I Built This
- 
-As a developer, I noticed I was rewriting the same foundational code for every new project. So I created this repo template to solve that by giving me a clean, reusable base so I can focus on actual feature work instead of re-solving the same problems each time.
+ Starter API template with layered architecture, built to eliminate rewriting the same foundational code for every new project. This repo gives a clean, reusable base so developer can focus on create new features instead of re-solving the same problems each time.
  
 ## Tech Stack 
-- **Backend:** .NET, Entity Framework Core (Code-First), PostgreSQL, ASP.NET Identity
+- .NET, Entity Framework Core (Code-First), PostgreSQL, ASP.NET Identity
 ## Features
 - **Layered architecture:** Data Access => Business => API
 - **Result pattern** for consistent success/error handling across services
